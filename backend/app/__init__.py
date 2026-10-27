@@ -1,0 +1,1 @@
+"""Mandate Arena application package."""
