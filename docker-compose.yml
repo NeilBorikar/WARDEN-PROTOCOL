@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  warden-protocol:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: warden-protocol:latest
+    container_name: warden-protocol-app
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - PAYPAL_MODE=sandbox
+      - PRIMARY_RAIL=mock
+      - ARENA_KILL_SWITCH=false
+      - DATABASE_URL=sqlite:////app/data/mandate_arena.db
+    volumes:
+      - arena-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  arena-data:

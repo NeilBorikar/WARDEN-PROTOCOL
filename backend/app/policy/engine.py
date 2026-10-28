@@ -40,7 +40,7 @@ class PolicyEngine:
         mandate: Mandate,
         intent: Intent | None,
         deal: Deal | None,
-        owner_public_key_hex: str,
+        owner_public_key_hex: str | bytes,
         history: list[HistoricalPayment] | None = None,
         revoked_mandate_ids: set[str] | None = None,
         evaluated_at: datetime | None = None,
@@ -50,6 +50,11 @@ class PolicyEngine:
         Evaluates ALL applicable checks and aggregates reasons.
         Most restrictive verdict wins (P5: BLOCK > ASK_OWNER > ALLOW).
         """
+        pub_hex = (
+            owner_public_key_hex.hex()
+            if isinstance(owner_public_key_hex, (bytes, bytearray))
+            else owner_public_key_hex
+        )
         now = evaluated_at or datetime.now(UTC)
         history_list = history or []
         revoked_set = revoked_mandate_ids or set()
@@ -67,7 +72,7 @@ class PolicyEngine:
                     request,
                     mandate,
                     intent,
-                    owner_public_key_hex,
+                    pub_hex,
                     revoked_mandate_ids=revoked_set,
                 )
             )
@@ -136,3 +141,27 @@ class PolicyEngine:
             request_hash=request_hash,
             evaluated_at=now,
         )
+
+
+def evaluate_payment_request(
+    request: PaymentRequest,
+    mandate: Mandate,
+    intent: Intent | None = None,
+    deal: Deal | None = None,
+    owner_public_key: str | bytes | None = None,
+    history: list[HistoricalPayment] | None = None,
+    revoked_mandate_ids: set[str] | None = None,
+    evaluated_at: datetime | None = None,
+) -> Decision:
+    """Convenience functional wrapper around PolicyEngine.evaluate."""
+    pub_key: str | bytes = owner_public_key or ""
+    return PolicyEngine.evaluate(
+        request=request,
+        mandate=mandate,
+        intent=intent,
+        deal=deal,
+        owner_public_key_hex=pub_key,
+        history=history,
+        revoked_mandate_ids=revoked_mandate_ids,
+        evaluated_at=evaluated_at,
+    )

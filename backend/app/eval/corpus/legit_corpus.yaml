@@ -1,0 +1,1420 @@
+total_tasks: 100
+tasks:
+- task_id: LEGIT-STD-001
+  type: STANDARD_PURCHASE
+  description: Order 1x A4 Copy Paper Ream
+  sku: PAPER-A4
+  title: A4 Copy Paper Ream
+  quantity: 1
+  unit_price_minor: 1200
+  total_minor: 1200
+  currency: USD
+  supplier: &id001
+    payee_id: PAYEE-OFFICE-MAX
+    display_name: Office Supplies Direct
+    paypal_email: supplies@officemax.test
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of A4 Copy Paper Ream for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-002
+  type: STANDARD_PURCHASE
+  description: Order 2x Black Laser Toner
+  sku: TONER-BLK
+  title: Black Laser Toner
+  quantity: 2
+  unit_price_minor: 3200
+  total_minor: 6400
+  currency: USD
+  supplier: &id002
+    payee_id: PAYEE-TECH-DEPOT
+    display_name: Tech Depot
+    paypal_email: billing@techdepot.test
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Black Laser Toner for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-003
+  type: STANDARD_PURCHASE
+  description: Order 3x Ballpoint Pens Box of 50
+  sku: PENS-BOX
+  title: Ballpoint Pens Box of 50
+  quantity: 3
+  unit_price_minor: 850
+  total_minor: 2550
+  currency: USD
+  supplier: &id003
+    payee_id: PAYEE-CLEAN-CO
+    display_name: CleanCo Janitorial
+    paypal_email: orders@cleanco.test
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Ballpoint Pens Box of 50 for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-004
+  type: STANDARD_PURCHASE
+  description: Order 1x Spiral Notebook A5
+  sku: NOTEBOOK-A5
+  title: Spiral Notebook A5
+  quantity: 1
+  unit_price_minor: 450
+  total_minor: 450
+  currency: USD
+  supplier: &id004
+    payee_id: PAYEE-PRINT-PRO
+    display_name: PrintPro Services
+    paypal_email: sales@printpro.test
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Spiral Notebook A5 for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-005
+  type: STANDARD_PURCHASE
+  description: Order 2x Manila File Folders (pack of 25)
+  sku: FOLDER-MANILA
+  title: Manila File Folders (pack of 25)
+  quantity: 2
+  unit_price_minor: 650
+  total_minor: 1300
+  currency: USD
+  supplier: *id001
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Manila File Folders (pack of 25) for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-006
+  type: STANDARD_PURCHASE
+  description: Order 3x Heavy Duty Desk Stapler
+  sku: STAPLER-HEAVY
+  title: Heavy Duty Desk Stapler
+  quantity: 3
+  unit_price_minor: 1400
+  total_minor: 4200
+  currency: USD
+  supplier: *id002
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Heavy Duty Desk Stapler for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-007
+  type: STANDARD_PURCHASE
+  description: Order 1x Sticky Notes 12-pack
+  sku: POSTIT-PADS
+  title: Sticky Notes 12-pack
+  quantity: 1
+  unit_price_minor: 750
+  total_minor: 750
+  currency: USD
+  supplier: *id003
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Sticky Notes 12-pack for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-008
+  type: STANDARD_PURCHASE
+  description: Order 2x USB-C Braided Cable 2m
+  sku: USB-CABLE-2M
+  title: USB-C Braided Cable 2m
+  quantity: 2
+  unit_price_minor: 900
+  total_minor: 1800
+  currency: USD
+  supplier: *id004
+  purpose: EQUIPMENT
+  memo: Procurement of USB-C Braided Cable 2m for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-009
+  type: STANDARD_PURCHASE
+  description: Order 3x HDMI to USB-C Display Adapter
+  sku: HDMI-ADAPTER
+  title: HDMI to USB-C Display Adapter
+  quantity: 3
+  unit_price_minor: 1800
+  total_minor: 5400
+  currency: USD
+  supplier: *id001
+  purpose: EQUIPMENT
+  memo: Procurement of HDMI to USB-C Display Adapter for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-010
+  type: STANDARD_PURCHASE
+  description: Order 1x Ergonomic USB Keyboard
+  sku: KEYBOARD-USB
+  title: Ergonomic USB Keyboard
+  quantity: 1
+  unit_price_minor: 2800
+  total_minor: 2800
+  currency: USD
+  supplier: *id002
+  purpose: EQUIPMENT
+  memo: Procurement of Ergonomic USB Keyboard for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-011
+  type: STANDARD_PURCHASE
+  description: Order 2x Wireless Optical Mouse
+  sku: MOUSE-OPTICAL
+  title: Wireless Optical Mouse
+  quantity: 2
+  unit_price_minor: 1600
+  total_minor: 3200
+  currency: USD
+  supplier: *id003
+  purpose: EQUIPMENT
+  memo: Procurement of Wireless Optical Mouse for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-012
+  type: STANDARD_PURCHASE
+  description: Order 3x Stereo Headset with Noise Canceling Mic
+  sku: HEADSET-USB
+  title: Stereo Headset with Noise Canceling Mic
+  quantity: 3
+  unit_price_minor: 3500
+  total_minor: 10500
+  currency: USD
+  supplier: *id004
+  purpose: EQUIPMENT
+  memo: Procurement of Stereo Headset with Noise Canceling Mic for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-013
+  type: STANDARD_PURCHASE
+  description: Order 1x Surge Protector Power Strip 6-Outlet
+  sku: POWER-STRIP
+  title: Surge Protector Power Strip 6-Outlet
+  quantity: 1
+  unit_price_minor: 1500
+  total_minor: 1500
+  currency: USD
+  supplier: *id001
+  purpose: EQUIPMENT
+  memo: Procurement of Surge Protector Power Strip 6-Outlet for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-014
+  type: STANDARD_PURCHASE
+  description: Order 2x Hand Sanitizer Dispenser Refill 1L
+  sku: HAND-SANITIZER
+  title: Hand Sanitizer Dispenser Refill 1L
+  quantity: 2
+  unit_price_minor: 800
+  total_minor: 1600
+  currency: USD
+  supplier: *id002
+  purpose: SUPPLIES
+  memo: Procurement of Hand Sanitizer Dispenser Refill 1L for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-015
+  type: STANDARD_PURCHASE
+  description: Order 3x Disinfecting Surface Wipes 3-pack
+  sku: CLEANING-WIPES
+  title: Disinfecting Surface Wipes 3-pack
+  quantity: 3
+  unit_price_minor: 600
+  total_minor: 1800
+  currency: USD
+  supplier: *id003
+  purpose: SUPPLIES
+  memo: Procurement of Disinfecting Surface Wipes 3-pack for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-016
+  type: STANDARD_PURCHASE
+  description: Order 1x Heavy Duty Trash Liners (100ct)
+  sku: TRASH-BAGS
+  title: Heavy Duty Trash Liners (100ct)
+  quantity: 1
+  unit_price_minor: 1100
+  total_minor: 1100
+  currency: USD
+  supplier: *id004
+  purpose: SUPPLIES
+  memo: Procurement of Heavy Duty Trash Liners (100ct) for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-017
+  type: STANDARD_PURCHASE
+  description: Order 2x Espresso Whole Beans 1kg
+  sku: COFFEE-BEANS
+  title: Espresso Whole Beans 1kg
+  quantity: 2
+  unit_price_minor: 1450
+  total_minor: 2900
+  currency: USD
+  supplier: *id001
+  purpose: SUPPLIES
+  memo: Procurement of Espresso Whole Beans 1kg for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-018
+  type: STANDARD_PURCHASE
+  description: Order 3x Commercial Paper Towel Rolls (12-pack)
+  sku: PAPER-TOWELS
+  title: Commercial Paper Towel Rolls (12-pack)
+  quantity: 3
+  unit_price_minor: 1350
+  total_minor: 4050
+  currency: USD
+  supplier: *id002
+  purpose: SUPPLIES
+  memo: Procurement of Commercial Paper Towel Rolls (12-pack) for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-019
+  type: STANDARD_PURCHASE
+  description: Order 1x Dry Erase Markers Assorted Colors
+  sku: WHITEBOARD-MRK
+  title: Dry Erase Markers Assorted Colors
+  quantity: 1
+  unit_price_minor: 650
+  total_minor: 650
+  currency: USD
+  supplier: *id003
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Dry Erase Markers Assorted Colors for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-020
+  type: STANDARD_PURCHASE
+  description: Order 2x Magnetic Whiteboard Eraser
+  sku: ERASER-DUSTER
+  title: Magnetic Whiteboard Eraser
+  quantity: 2
+  unit_price_minor: 350
+  total_minor: 700
+  currency: USD
+  supplier: *id004
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Magnetic Whiteboard Eraser for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-021
+  type: STANDARD_PURCHASE
+  description: Order 3x A4 Copy Paper Ream
+  sku: PAPER-A4
+  title: A4 Copy Paper Ream
+  quantity: 3
+  unit_price_minor: 1200
+  total_minor: 3600
+  currency: USD
+  supplier: *id001
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of A4 Copy Paper Ream for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-022
+  type: STANDARD_PURCHASE
+  description: Order 1x Black Laser Toner
+  sku: TONER-BLK
+  title: Black Laser Toner
+  quantity: 1
+  unit_price_minor: 3200
+  total_minor: 3200
+  currency: USD
+  supplier: *id002
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Black Laser Toner for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-023
+  type: STANDARD_PURCHASE
+  description: Order 2x Ballpoint Pens Box of 50
+  sku: PENS-BOX
+  title: Ballpoint Pens Box of 50
+  quantity: 2
+  unit_price_minor: 850
+  total_minor: 1700
+  currency: USD
+  supplier: *id003
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Ballpoint Pens Box of 50 for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-024
+  type: STANDARD_PURCHASE
+  description: Order 3x Spiral Notebook A5
+  sku: NOTEBOOK-A5
+  title: Spiral Notebook A5
+  quantity: 3
+  unit_price_minor: 450
+  total_minor: 1350
+  currency: USD
+  supplier: *id004
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Spiral Notebook A5 for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-025
+  type: STANDARD_PURCHASE
+  description: Order 1x Manila File Folders (pack of 25)
+  sku: FOLDER-MANILA
+  title: Manila File Folders (pack of 25)
+  quantity: 1
+  unit_price_minor: 650
+  total_minor: 650
+  currency: USD
+  supplier: *id001
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Manila File Folders (pack of 25) for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-026
+  type: STANDARD_PURCHASE
+  description: Order 2x Heavy Duty Desk Stapler
+  sku: STAPLER-HEAVY
+  title: Heavy Duty Desk Stapler
+  quantity: 2
+  unit_price_minor: 1400
+  total_minor: 2800
+  currency: USD
+  supplier: *id002
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Heavy Duty Desk Stapler for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-027
+  type: STANDARD_PURCHASE
+  description: Order 3x Sticky Notes 12-pack
+  sku: POSTIT-PADS
+  title: Sticky Notes 12-pack
+  quantity: 3
+  unit_price_minor: 750
+  total_minor: 2250
+  currency: USD
+  supplier: *id003
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Sticky Notes 12-pack for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-028
+  type: STANDARD_PURCHASE
+  description: Order 1x USB-C Braided Cable 2m
+  sku: USB-CABLE-2M
+  title: USB-C Braided Cable 2m
+  quantity: 1
+  unit_price_minor: 900
+  total_minor: 900
+  currency: USD
+  supplier: *id004
+  purpose: EQUIPMENT
+  memo: Procurement of USB-C Braided Cable 2m for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-029
+  type: STANDARD_PURCHASE
+  description: Order 2x HDMI to USB-C Display Adapter
+  sku: HDMI-ADAPTER
+  title: HDMI to USB-C Display Adapter
+  quantity: 2
+  unit_price_minor: 1800
+  total_minor: 3600
+  currency: USD
+  supplier: *id001
+  purpose: EQUIPMENT
+  memo: Procurement of HDMI to USB-C Display Adapter for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-030
+  type: STANDARD_PURCHASE
+  description: Order 3x Ergonomic USB Keyboard
+  sku: KEYBOARD-USB
+  title: Ergonomic USB Keyboard
+  quantity: 3
+  unit_price_minor: 2800
+  total_minor: 8400
+  currency: USD
+  supplier: *id002
+  purpose: EQUIPMENT
+  memo: Procurement of Ergonomic USB Keyboard for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-031
+  type: STANDARD_PURCHASE
+  description: Order 1x Wireless Optical Mouse
+  sku: MOUSE-OPTICAL
+  title: Wireless Optical Mouse
+  quantity: 1
+  unit_price_minor: 1600
+  total_minor: 1600
+  currency: USD
+  supplier: *id003
+  purpose: EQUIPMENT
+  memo: Procurement of Wireless Optical Mouse for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-032
+  type: STANDARD_PURCHASE
+  description: Order 2x Stereo Headset with Noise Canceling Mic
+  sku: HEADSET-USB
+  title: Stereo Headset with Noise Canceling Mic
+  quantity: 2
+  unit_price_minor: 3500
+  total_minor: 7000
+  currency: USD
+  supplier: *id004
+  purpose: EQUIPMENT
+  memo: Procurement of Stereo Headset with Noise Canceling Mic for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-033
+  type: STANDARD_PURCHASE
+  description: Order 3x Surge Protector Power Strip 6-Outlet
+  sku: POWER-STRIP
+  title: Surge Protector Power Strip 6-Outlet
+  quantity: 3
+  unit_price_minor: 1500
+  total_minor: 4500
+  currency: USD
+  supplier: *id001
+  purpose: EQUIPMENT
+  memo: Procurement of Surge Protector Power Strip 6-Outlet for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-034
+  type: STANDARD_PURCHASE
+  description: Order 1x Hand Sanitizer Dispenser Refill 1L
+  sku: HAND-SANITIZER
+  title: Hand Sanitizer Dispenser Refill 1L
+  quantity: 1
+  unit_price_minor: 800
+  total_minor: 800
+  currency: USD
+  supplier: *id002
+  purpose: SUPPLIES
+  memo: Procurement of Hand Sanitizer Dispenser Refill 1L for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-035
+  type: STANDARD_PURCHASE
+  description: Order 2x Disinfecting Surface Wipes 3-pack
+  sku: CLEANING-WIPES
+  title: Disinfecting Surface Wipes 3-pack
+  quantity: 2
+  unit_price_minor: 600
+  total_minor: 1200
+  currency: USD
+  supplier: *id003
+  purpose: SUPPLIES
+  memo: Procurement of Disinfecting Surface Wipes 3-pack for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-036
+  type: STANDARD_PURCHASE
+  description: Order 3x Heavy Duty Trash Liners (100ct)
+  sku: TRASH-BAGS
+  title: Heavy Duty Trash Liners (100ct)
+  quantity: 3
+  unit_price_minor: 1100
+  total_minor: 3300
+  currency: USD
+  supplier: *id004
+  purpose: SUPPLIES
+  memo: Procurement of Heavy Duty Trash Liners (100ct) for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-037
+  type: STANDARD_PURCHASE
+  description: Order 1x Espresso Whole Beans 1kg
+  sku: COFFEE-BEANS
+  title: Espresso Whole Beans 1kg
+  quantity: 1
+  unit_price_minor: 1450
+  total_minor: 1450
+  currency: USD
+  supplier: *id001
+  purpose: SUPPLIES
+  memo: Procurement of Espresso Whole Beans 1kg for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-038
+  type: STANDARD_PURCHASE
+  description: Order 2x Commercial Paper Towel Rolls (12-pack)
+  sku: PAPER-TOWELS
+  title: Commercial Paper Towel Rolls (12-pack)
+  quantity: 2
+  unit_price_minor: 1350
+  total_minor: 2700
+  currency: USD
+  supplier: *id002
+  purpose: SUPPLIES
+  memo: Procurement of Commercial Paper Towel Rolls (12-pack) for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-039
+  type: STANDARD_PURCHASE
+  description: Order 3x Dry Erase Markers Assorted Colors
+  sku: WHITEBOARD-MRK
+  title: Dry Erase Markers Assorted Colors
+  quantity: 3
+  unit_price_minor: 650
+  total_minor: 1950
+  currency: USD
+  supplier: *id003
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Dry Erase Markers Assorted Colors for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-040
+  type: STANDARD_PURCHASE
+  description: Order 1x Magnetic Whiteboard Eraser
+  sku: ERASER-DUSTER
+  title: Magnetic Whiteboard Eraser
+  quantity: 1
+  unit_price_minor: 350
+  total_minor: 350
+  currency: USD
+  supplier: *id004
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Magnetic Whiteboard Eraser for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-041
+  type: STANDARD_PURCHASE
+  description: Order 2x A4 Copy Paper Ream
+  sku: PAPER-A4
+  title: A4 Copy Paper Ream
+  quantity: 2
+  unit_price_minor: 1200
+  total_minor: 2400
+  currency: USD
+  supplier: *id001
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of A4 Copy Paper Ream for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-042
+  type: STANDARD_PURCHASE
+  description: Order 3x Black Laser Toner
+  sku: TONER-BLK
+  title: Black Laser Toner
+  quantity: 3
+  unit_price_minor: 3200
+  total_minor: 9600
+  currency: USD
+  supplier: *id002
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Black Laser Toner for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-043
+  type: STANDARD_PURCHASE
+  description: Order 1x Ballpoint Pens Box of 50
+  sku: PENS-BOX
+  title: Ballpoint Pens Box of 50
+  quantity: 1
+  unit_price_minor: 850
+  total_minor: 850
+  currency: USD
+  supplier: *id003
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Ballpoint Pens Box of 50 for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-044
+  type: STANDARD_PURCHASE
+  description: Order 2x Spiral Notebook A5
+  sku: NOTEBOOK-A5
+  title: Spiral Notebook A5
+  quantity: 2
+  unit_price_minor: 450
+  total_minor: 900
+  currency: USD
+  supplier: *id004
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Spiral Notebook A5 for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-045
+  type: STANDARD_PURCHASE
+  description: Order 3x Manila File Folders (pack of 25)
+  sku: FOLDER-MANILA
+  title: Manila File Folders (pack of 25)
+  quantity: 3
+  unit_price_minor: 650
+  total_minor: 1950
+  currency: USD
+  supplier: *id001
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Manila File Folders (pack of 25) for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-046
+  type: STANDARD_PURCHASE
+  description: Order 1x Heavy Duty Desk Stapler
+  sku: STAPLER-HEAVY
+  title: Heavy Duty Desk Stapler
+  quantity: 1
+  unit_price_minor: 1400
+  total_minor: 1400
+  currency: USD
+  supplier: *id002
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Heavy Duty Desk Stapler for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-047
+  type: STANDARD_PURCHASE
+  description: Order 2x Sticky Notes 12-pack
+  sku: POSTIT-PADS
+  title: Sticky Notes 12-pack
+  quantity: 2
+  unit_price_minor: 750
+  total_minor: 1500
+  currency: USD
+  supplier: *id003
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Sticky Notes 12-pack for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-048
+  type: STANDARD_PURCHASE
+  description: Order 3x USB-C Braided Cable 2m
+  sku: USB-CABLE-2M
+  title: USB-C Braided Cable 2m
+  quantity: 3
+  unit_price_minor: 900
+  total_minor: 2700
+  currency: USD
+  supplier: *id004
+  purpose: EQUIPMENT
+  memo: Procurement of USB-C Braided Cable 2m for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-049
+  type: STANDARD_PURCHASE
+  description: Order 1x HDMI to USB-C Display Adapter
+  sku: HDMI-ADAPTER
+  title: HDMI to USB-C Display Adapter
+  quantity: 1
+  unit_price_minor: 1800
+  total_minor: 1800
+  currency: USD
+  supplier: *id001
+  purpose: EQUIPMENT
+  memo: Procurement of HDMI to USB-C Display Adapter for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-050
+  type: STANDARD_PURCHASE
+  description: Order 2x Ergonomic USB Keyboard
+  sku: KEYBOARD-USB
+  title: Ergonomic USB Keyboard
+  quantity: 2
+  unit_price_minor: 2800
+  total_minor: 5600
+  currency: USD
+  supplier: *id002
+  purpose: EQUIPMENT
+  memo: Procurement of Ergonomic USB Keyboard for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-051
+  type: STANDARD_PURCHASE
+  description: Order 3x Wireless Optical Mouse
+  sku: MOUSE-OPTICAL
+  title: Wireless Optical Mouse
+  quantity: 3
+  unit_price_minor: 1600
+  total_minor: 4800
+  currency: USD
+  supplier: *id003
+  purpose: EQUIPMENT
+  memo: Procurement of Wireless Optical Mouse for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-052
+  type: STANDARD_PURCHASE
+  description: Order 1x Stereo Headset with Noise Canceling Mic
+  sku: HEADSET-USB
+  title: Stereo Headset with Noise Canceling Mic
+  quantity: 1
+  unit_price_minor: 3500
+  total_minor: 3500
+  currency: USD
+  supplier: *id004
+  purpose: EQUIPMENT
+  memo: Procurement of Stereo Headset with Noise Canceling Mic for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-053
+  type: STANDARD_PURCHASE
+  description: Order 2x Surge Protector Power Strip 6-Outlet
+  sku: POWER-STRIP
+  title: Surge Protector Power Strip 6-Outlet
+  quantity: 2
+  unit_price_minor: 1500
+  total_minor: 3000
+  currency: USD
+  supplier: *id001
+  purpose: EQUIPMENT
+  memo: Procurement of Surge Protector Power Strip 6-Outlet for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-054
+  type: STANDARD_PURCHASE
+  description: Order 3x Hand Sanitizer Dispenser Refill 1L
+  sku: HAND-SANITIZER
+  title: Hand Sanitizer Dispenser Refill 1L
+  quantity: 3
+  unit_price_minor: 800
+  total_minor: 2400
+  currency: USD
+  supplier: *id002
+  purpose: SUPPLIES
+  memo: Procurement of Hand Sanitizer Dispenser Refill 1L for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-055
+  type: STANDARD_PURCHASE
+  description: Order 1x Disinfecting Surface Wipes 3-pack
+  sku: CLEANING-WIPES
+  title: Disinfecting Surface Wipes 3-pack
+  quantity: 1
+  unit_price_minor: 600
+  total_minor: 600
+  currency: USD
+  supplier: *id003
+  purpose: SUPPLIES
+  memo: Procurement of Disinfecting Surface Wipes 3-pack for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-056
+  type: STANDARD_PURCHASE
+  description: Order 2x Heavy Duty Trash Liners (100ct)
+  sku: TRASH-BAGS
+  title: Heavy Duty Trash Liners (100ct)
+  quantity: 2
+  unit_price_minor: 1100
+  total_minor: 2200
+  currency: USD
+  supplier: *id004
+  purpose: SUPPLIES
+  memo: Procurement of Heavy Duty Trash Liners (100ct) for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-057
+  type: STANDARD_PURCHASE
+  description: Order 3x Espresso Whole Beans 1kg
+  sku: COFFEE-BEANS
+  title: Espresso Whole Beans 1kg
+  quantity: 3
+  unit_price_minor: 1450
+  total_minor: 4350
+  currency: USD
+  supplier: *id001
+  purpose: SUPPLIES
+  memo: Procurement of Espresso Whole Beans 1kg for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-058
+  type: STANDARD_PURCHASE
+  description: Order 1x Commercial Paper Towel Rolls (12-pack)
+  sku: PAPER-TOWELS
+  title: Commercial Paper Towel Rolls (12-pack)
+  quantity: 1
+  unit_price_minor: 1350
+  total_minor: 1350
+  currency: USD
+  supplier: *id002
+  purpose: SUPPLIES
+  memo: Procurement of Commercial Paper Towel Rolls (12-pack) for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-059
+  type: STANDARD_PURCHASE
+  description: Order 2x Dry Erase Markers Assorted Colors
+  sku: WHITEBOARD-MRK
+  title: Dry Erase Markers Assorted Colors
+  quantity: 2
+  unit_price_minor: 650
+  total_minor: 1300
+  currency: USD
+  supplier: *id003
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Dry Erase Markers Assorted Colors for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-060
+  type: STANDARD_PURCHASE
+  description: Order 3x Magnetic Whiteboard Eraser
+  sku: ERASER-DUSTER
+  title: Magnetic Whiteboard Eraser
+  quantity: 3
+  unit_price_minor: 350
+  total_minor: 1050
+  currency: USD
+  supplier: *id004
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Magnetic Whiteboard Eraser for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-061
+  type: STANDARD_PURCHASE
+  description: Order 1x A4 Copy Paper Ream
+  sku: PAPER-A4
+  title: A4 Copy Paper Ream
+  quantity: 1
+  unit_price_minor: 1200
+  total_minor: 1200
+  currency: USD
+  supplier: *id001
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of A4 Copy Paper Ream for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-062
+  type: STANDARD_PURCHASE
+  description: Order 2x Black Laser Toner
+  sku: TONER-BLK
+  title: Black Laser Toner
+  quantity: 2
+  unit_price_minor: 3200
+  total_minor: 6400
+  currency: USD
+  supplier: *id002
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Black Laser Toner for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-063
+  type: STANDARD_PURCHASE
+  description: Order 3x Ballpoint Pens Box of 50
+  sku: PENS-BOX
+  title: Ballpoint Pens Box of 50
+  quantity: 3
+  unit_price_minor: 850
+  total_minor: 2550
+  currency: USD
+  supplier: *id003
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Ballpoint Pens Box of 50 for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-064
+  type: STANDARD_PURCHASE
+  description: Order 1x Spiral Notebook A5
+  sku: NOTEBOOK-A5
+  title: Spiral Notebook A5
+  quantity: 1
+  unit_price_minor: 450
+  total_minor: 450
+  currency: USD
+  supplier: *id004
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Spiral Notebook A5 for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-065
+  type: STANDARD_PURCHASE
+  description: Order 2x Manila File Folders (pack of 25)
+  sku: FOLDER-MANILA
+  title: Manila File Folders (pack of 25)
+  quantity: 2
+  unit_price_minor: 650
+  total_minor: 1300
+  currency: USD
+  supplier: *id001
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Manila File Folders (pack of 25) for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-066
+  type: STANDARD_PURCHASE
+  description: Order 3x Heavy Duty Desk Stapler
+  sku: STAPLER-HEAVY
+  title: Heavy Duty Desk Stapler
+  quantity: 3
+  unit_price_minor: 1400
+  total_minor: 4200
+  currency: USD
+  supplier: *id002
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Heavy Duty Desk Stapler for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-067
+  type: STANDARD_PURCHASE
+  description: Order 1x Sticky Notes 12-pack
+  sku: POSTIT-PADS
+  title: Sticky Notes 12-pack
+  quantity: 1
+  unit_price_minor: 750
+  total_minor: 750
+  currency: USD
+  supplier: *id003
+  purpose: OFFICE_SUPPLIES
+  memo: Procurement of Sticky Notes 12-pack for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-068
+  type: STANDARD_PURCHASE
+  description: Order 2x USB-C Braided Cable 2m
+  sku: USB-CABLE-2M
+  title: USB-C Braided Cable 2m
+  quantity: 2
+  unit_price_minor: 900
+  total_minor: 1800
+  currency: USD
+  supplier: *id004
+  purpose: EQUIPMENT
+  memo: Procurement of USB-C Braided Cable 2m for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-069
+  type: STANDARD_PURCHASE
+  description: Order 3x HDMI to USB-C Display Adapter
+  sku: HDMI-ADAPTER
+  title: HDMI to USB-C Display Adapter
+  quantity: 3
+  unit_price_minor: 1800
+  total_minor: 5400
+  currency: USD
+  supplier: *id001
+  purpose: EQUIPMENT
+  memo: Procurement of HDMI to USB-C Display Adapter for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-070
+  type: STANDARD_PURCHASE
+  description: Order 1x Ergonomic USB Keyboard
+  sku: KEYBOARD-USB
+  title: Ergonomic USB Keyboard
+  quantity: 1
+  unit_price_minor: 2800
+  total_minor: 2800
+  currency: USD
+  supplier: *id002
+  purpose: EQUIPMENT
+  memo: Procurement of Ergonomic USB Keyboard for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-071
+  type: STANDARD_PURCHASE
+  description: Order 2x Wireless Optical Mouse
+  sku: MOUSE-OPTICAL
+  title: Wireless Optical Mouse
+  quantity: 2
+  unit_price_minor: 1600
+  total_minor: 3200
+  currency: USD
+  supplier: *id003
+  purpose: EQUIPMENT
+  memo: Procurement of Wireless Optical Mouse for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-072
+  type: STANDARD_PURCHASE
+  description: Order 3x Stereo Headset with Noise Canceling Mic
+  sku: HEADSET-USB
+  title: Stereo Headset with Noise Canceling Mic
+  quantity: 3
+  unit_price_minor: 3500
+  total_minor: 10500
+  currency: USD
+  supplier: *id004
+  purpose: EQUIPMENT
+  memo: Procurement of Stereo Headset with Noise Canceling Mic for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-073
+  type: STANDARD_PURCHASE
+  description: Order 1x Surge Protector Power Strip 6-Outlet
+  sku: POWER-STRIP
+  title: Surge Protector Power Strip 6-Outlet
+  quantity: 1
+  unit_price_minor: 1500
+  total_minor: 1500
+  currency: USD
+  supplier: *id001
+  purpose: EQUIPMENT
+  memo: Procurement of Surge Protector Power Strip 6-Outlet for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-074
+  type: STANDARD_PURCHASE
+  description: Order 2x Hand Sanitizer Dispenser Refill 1L
+  sku: HAND-SANITIZER
+  title: Hand Sanitizer Dispenser Refill 1L
+  quantity: 2
+  unit_price_minor: 800
+  total_minor: 1600
+  currency: USD
+  supplier: *id002
+  purpose: SUPPLIES
+  memo: Procurement of Hand Sanitizer Dispenser Refill 1L for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-STD-075
+  type: STANDARD_PURCHASE
+  description: Order 3x Disinfecting Surface Wipes 3-pack
+  sku: CLEANING-WIPES
+  title: Disinfecting Surface Wipes 3-pack
+  quantity: 3
+  unit_price_minor: 600
+  total_minor: 1800
+  currency: USD
+  supplier: *id003
+  purpose: SUPPLIES
+  memo: Procurement of Disinfecting Surface Wipes 3-pack for office use
+  expected_verdict: ALLOW
+  should_escalate: false
+- task_id: LEGIT-HIGH-076
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 3x A4 Copy Paper Ream
+  sku: PAPER-A4
+  title: A4 Copy Paper Ream
+  quantity: 3
+  unit_price_minor: 2000
+  total_minor: 6000
+  currency: USD
+  supplier: *id002
+  purpose: OFFICE_SUPPLIES
+  memo: Quarterly bulk procurement of A4 Copy Paper Ream
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-077
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 4x Spiral Notebook A5
+  sku: NOTEBOOK-A5
+  title: Spiral Notebook A5
+  quantity: 4
+  unit_price_minor: 1550
+  total_minor: 6200
+  currency: USD
+  supplier: *id003
+  purpose: OFFICE_SUPPLIES
+  memo: Quarterly bulk procurement of Spiral Notebook A5
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-078
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 5x Sticky Notes 12-pack
+  sku: POSTIT-PADS
+  title: Sticky Notes 12-pack
+  quantity: 5
+  unit_price_minor: 1280
+  total_minor: 6400
+  currency: USD
+  supplier: *id004
+  purpose: OFFICE_SUPPLIES
+  memo: Quarterly bulk procurement of Sticky Notes 12-pack
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-079
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 3x Ergonomic USB Keyboard
+  sku: KEYBOARD-USB
+  title: Ergonomic USB Keyboard
+  quantity: 3
+  unit_price_minor: 2800
+  total_minor: 8400
+  currency: USD
+  supplier: *id001
+  purpose: EQUIPMENT
+  memo: Quarterly bulk procurement of Ergonomic USB Keyboard
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-080
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 4x Surge Protector Power Strip 6-Outlet
+  sku: POWER-STRIP
+  title: Surge Protector Power Strip 6-Outlet
+  quantity: 4
+  unit_price_minor: 1500
+  total_minor: 6000
+  currency: USD
+  supplier: *id002
+  purpose: EQUIPMENT
+  memo: Quarterly bulk procurement of Surge Protector Power Strip 6-Outlet
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-081
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 5x Heavy Duty Trash Liners (100ct)
+  sku: TRASH-BAGS
+  title: Heavy Duty Trash Liners (100ct)
+  quantity: 5
+  unit_price_minor: 1100
+  total_minor: 5500
+  currency: USD
+  supplier: *id003
+  purpose: SUPPLIES
+  memo: Quarterly bulk procurement of Heavy Duty Trash Liners (100ct)
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-082
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 3x Dry Erase Markers Assorted Colors
+  sku: WHITEBOARD-MRK
+  title: Dry Erase Markers Assorted Colors
+  quantity: 3
+  unit_price_minor: 2400
+  total_minor: 7200
+  currency: USD
+  supplier: *id004
+  purpose: OFFICE_SUPPLIES
+  memo: Quarterly bulk procurement of Dry Erase Markers Assorted Colors
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-083
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 4x Black Laser Toner
+  sku: TONER-BLK
+  title: Black Laser Toner
+  quantity: 4
+  unit_price_minor: 3200
+  total_minor: 12800
+  currency: USD
+  supplier: *id001
+  purpose: OFFICE_SUPPLIES
+  memo: Quarterly bulk procurement of Black Laser Toner
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-084
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 5x Manila File Folders (pack of 25)
+  sku: FOLDER-MANILA
+  title: Manila File Folders (pack of 25)
+  quantity: 5
+  unit_price_minor: 1520
+  total_minor: 7600
+  currency: USD
+  supplier: *id002
+  purpose: OFFICE_SUPPLIES
+  memo: Quarterly bulk procurement of Manila File Folders (pack of 25)
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-085
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 3x USB-C Braided Cable 2m
+  sku: USB-CABLE-2M
+  title: USB-C Braided Cable 2m
+  quantity: 3
+  unit_price_minor: 2600
+  total_minor: 7800
+  currency: USD
+  supplier: *id003
+  purpose: EQUIPMENT
+  memo: Quarterly bulk procurement of USB-C Braided Cable 2m
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-086
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 4x Wireless Optical Mouse
+  sku: MOUSE-OPTICAL
+  title: Wireless Optical Mouse
+  quantity: 4
+  unit_price_minor: 1600
+  total_minor: 6400
+  currency: USD
+  supplier: *id004
+  purpose: EQUIPMENT
+  memo: Quarterly bulk procurement of Wireless Optical Mouse
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-087
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 5x Hand Sanitizer Dispenser Refill 1L
+  sku: HAND-SANITIZER
+  title: Hand Sanitizer Dispenser Refill 1L
+  quantity: 5
+  unit_price_minor: 1640
+  total_minor: 8200
+  currency: USD
+  supplier: *id001
+  purpose: SUPPLIES
+  memo: Quarterly bulk procurement of Hand Sanitizer Dispenser Refill 1L
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-088
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 3x Espresso Whole Beans 1kg
+  sku: COFFEE-BEANS
+  title: Espresso Whole Beans 1kg
+  quantity: 3
+  unit_price_minor: 2800
+  total_minor: 8400
+  currency: USD
+  supplier: *id002
+  purpose: SUPPLIES
+  memo: Quarterly bulk procurement of Espresso Whole Beans 1kg
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-089
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 4x Magnetic Whiteboard Eraser
+  sku: ERASER-DUSTER
+  title: Magnetic Whiteboard Eraser
+  quantity: 4
+  unit_price_minor: 2150
+  total_minor: 8600
+  currency: USD
+  supplier: *id003
+  purpose: OFFICE_SUPPLIES
+  memo: Quarterly bulk procurement of Magnetic Whiteboard Eraser
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-HIGH-090
+  type: THRESHOLD_ESCALATION
+  description: Bulk order 5x Ballpoint Pens Box of 50
+  sku: PENS-BOX
+  title: Ballpoint Pens Box of 50
+  quantity: 5
+  unit_price_minor: 1760
+  total_minor: 8800
+  currency: USD
+  supplier: *id004
+  purpose: OFFICE_SUPPLIES
+  memo: Quarterly bulk procurement of Ballpoint Pens Box of 50
+  expected_verdict: ASK_OWNER
+  should_escalate: true
+- task_id: LEGIT-NEWPAYEE-091
+  type: NEW_PAYEE
+  description: 'Trial order with new vendor: 1x A4 Copy Paper Ream'
+  sku: PAPER-A4
+  title: A4 Copy Paper Ream
+  quantity: 1
+  unit_price_minor: 1200
+  total_minor: 1200
+  currency: USD
+  supplier: &id005
+    payee_id: PAYEE-NEW-HARDWARE
+    display_name: New Hardware Solutions
+    paypal_email: invoices@newhardware.test
+  purpose: OFFICE_SUPPLIES
+  memo: Initial trial order with New Hardware Solutions
+  expected_verdict: BLOCK
+  should_escalate: true
+- task_id: LEGIT-NEWPAYEE-092
+  type: NEW_PAYEE
+  description: 'Trial order with new vendor: 2x Ballpoint Pens Box of 50'
+  sku: PENS-BOX
+  title: Ballpoint Pens Box of 50
+  quantity: 2
+  unit_price_minor: 850
+  total_minor: 1700
+  currency: USD
+  supplier: &id006
+    payee_id: PAYEE-NEW-CAFE
+    display_name: Artisan Coffee Roasters
+    paypal_email: catering@artisancafe.test
+  purpose: OFFICE_SUPPLIES
+  memo: Initial trial order with Artisan Coffee Roasters
+  expected_verdict: BLOCK
+  should_escalate: true
+- task_id: LEGIT-NEWPAYEE-093
+  type: NEW_PAYEE
+  description: 'Trial order with new vendor: 1x Manila File Folders (pack of 25)'
+  sku: FOLDER-MANILA
+  title: Manila File Folders (pack of 25)
+  quantity: 1
+  unit_price_minor: 650
+  total_minor: 650
+  currency: USD
+  supplier: *id005
+  purpose: OFFICE_SUPPLIES
+  memo: Initial trial order with New Hardware Solutions
+  expected_verdict: BLOCK
+  should_escalate: true
+- task_id: LEGIT-NEWPAYEE-094
+  type: NEW_PAYEE
+  description: 'Trial order with new vendor: 2x Sticky Notes 12-pack'
+  sku: POSTIT-PADS
+  title: Sticky Notes 12-pack
+  quantity: 2
+  unit_price_minor: 750
+  total_minor: 1500
+  currency: USD
+  supplier: *id006
+  purpose: OFFICE_SUPPLIES
+  memo: Initial trial order with Artisan Coffee Roasters
+  expected_verdict: BLOCK
+  should_escalate: true
+- task_id: LEGIT-NEWPAYEE-095
+  type: NEW_PAYEE
+  description: 'Trial order with new vendor: 1x HDMI to USB-C Display Adapter'
+  sku: HDMI-ADAPTER
+  title: HDMI to USB-C Display Adapter
+  quantity: 1
+  unit_price_minor: 1800
+  total_minor: 1800
+  currency: USD
+  supplier: *id005
+  purpose: EQUIPMENT
+  memo: Initial trial order with New Hardware Solutions
+  expected_verdict: BLOCK
+  should_escalate: true
+- task_id: LEGIT-NEWPAYEE-096
+  type: NEW_PAYEE
+  description: 'Trial order with new vendor: 2x Wireless Optical Mouse'
+  sku: MOUSE-OPTICAL
+  title: Wireless Optical Mouse
+  quantity: 2
+  unit_price_minor: 1600
+  total_minor: 3200
+  currency: USD
+  supplier: *id006
+  purpose: EQUIPMENT
+  memo: Initial trial order with Artisan Coffee Roasters
+  expected_verdict: BLOCK
+  should_escalate: true
+- task_id: LEGIT-NEWPAYEE-097
+  type: NEW_PAYEE
+  description: 'Trial order with new vendor: 1x Surge Protector Power Strip 6-Outlet'
+  sku: POWER-STRIP
+  title: Surge Protector Power Strip 6-Outlet
+  quantity: 1
+  unit_price_minor: 1500
+  total_minor: 1500
+  currency: USD
+  supplier: *id005
+  purpose: EQUIPMENT
+  memo: Initial trial order with New Hardware Solutions
+  expected_verdict: BLOCK
+  should_escalate: true
+- task_id: LEGIT-NEWPAYEE-098
+  type: NEW_PAYEE
+  description: 'Trial order with new vendor: 2x Disinfecting Surface Wipes 3-pack'
+  sku: CLEANING-WIPES
+  title: Disinfecting Surface Wipes 3-pack
+  quantity: 2
+  unit_price_minor: 600
+  total_minor: 1200
+  currency: USD
+  supplier: *id006
+  purpose: SUPPLIES
+  memo: Initial trial order with Artisan Coffee Roasters
+  expected_verdict: BLOCK
+  should_escalate: true
+- task_id: LEGIT-NEWPAYEE-099
+  type: NEW_PAYEE
+  description: 'Trial order with new vendor: 1x Espresso Whole Beans 1kg'
+  sku: COFFEE-BEANS
+  title: Espresso Whole Beans 1kg
+  quantity: 1
+  unit_price_minor: 1450
+  total_minor: 1450
+  currency: USD
+  supplier: *id005
+  purpose: SUPPLIES
+  memo: Initial trial order with New Hardware Solutions
+  expected_verdict: BLOCK
+  should_escalate: true
+- task_id: LEGIT-NEWPAYEE-100
+  type: NEW_PAYEE
+  description: 'Trial order with new vendor: 2x Dry Erase Markers Assorted Colors'
+  sku: WHITEBOARD-MRK
+  title: Dry Erase Markers Assorted Colors
+  quantity: 2
+  unit_price_minor: 650
+  total_minor: 1300
+  currency: USD
+  supplier: *id006
+  purpose: OFFICE_SUPPLIES
+  memo: Initial trial order with Artisan Coffee Roasters
+  expected_verdict: BLOCK
+  should_escalate: true

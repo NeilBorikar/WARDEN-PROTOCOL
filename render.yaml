@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: warden-protocol
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: standard
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: ENVIRONMENT
+        value: production
+      - key: PAYPAL_MODE
+        value: sandbox
+      - key: PRIMARY_RAIL
+        value: mock
+      - key: ARENA_KILL_SWITCH
+        value: false

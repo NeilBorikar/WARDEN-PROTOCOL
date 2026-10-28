@@ -42,8 +42,9 @@ node_modules/
 web/dist/
 web/.env
 
-# Results (generated, but we may want to commit snapshots)
-results/
+# Results
+results/*
+!results/results.json
 
 # Secrets
 *.pem

@@ -121,3 +121,10 @@ class AuditLog:
 
     def __len__(self) -> int:
         return len(self._events)
+
+    def verify(self) -> tuple[bool, str | None]:
+        """Verify the cryptographic hash chain of this audit log."""
+        from app.audit.verify import verify_chain
+
+        res = verify_chain(self._events)
+        return res.is_valid, res.error

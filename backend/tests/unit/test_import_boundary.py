@@ -54,12 +54,10 @@ def test_import_boundary_enforced() -> None:
                 # Check 'from foo import bar'
                 elif isinstance(node, ast.ImportFrom) and node.module:
                     for prohibited in PROHIBITED_MODULE_PREFIXES:
-                            if node.module == prohibited or node.module.startswith(
-                                prohibited + "."
-                            ):
-                                violations.append(
-                                    f"{py_file.name}:{node.lineno}: Prohibited from-import '{node.module}'"
-                                )
+                        if node.module == prohibited or node.module.startswith(prohibited + "."):
+                            violations.append(
+                                f"{py_file.name}:{node.lineno}: Prohibited from-import '{node.module}'"
+                            )
 
     assert not violations, (
         "VIOLATION OF PRINCIPLE P1: Protected packages imported prohibited modules:\n"

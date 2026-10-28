@@ -204,16 +204,16 @@ def check_c3_payee_allowlist(
         req_email != deal.payee_email.strip().lower() or req_id != deal.payee_id.strip()
     ):
         return CheckResult(
-                Verdict.BLOCK,
-                Reason(
-                    code="PAYEE_MISMATCH",
-                    check_id="C3",
-                    message=(
-                        f"Requested payee ({req_email} / {req_id}) does not match "
-                        f"agreed deal payee ({deal.payee_email} / {deal.payee_id})."
-                    ),
+            Verdict.BLOCK,
+            Reason(
+                code="PAYEE_MISMATCH",
+                check_id="C3",
+                message=(
+                    f"Requested payee ({req_email} / {req_id}) does not match "
+                    f"agreed deal payee ({deal.payee_email} / {deal.payee_id})."
                 ),
-            )
+            ),
+        )
 
     # Check allow-list
     is_allowlisted = any(
