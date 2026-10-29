@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { type ScreenId } from './components/common/Header';
 import { LiveRunScreen } from './components/screens/LiveRunScreen';
 import { ApprovalsScreen } from './components/screens/ApprovalsScreen';
@@ -7,6 +8,7 @@ import { MandateScreen } from './components/screens/MandateScreen';
 import { AuditScreen } from './components/screens/AuditScreen';
 import { ResultsScreen } from './components/screens/ResultsScreen';
 import { ArenaScreen } from './components/screens/ArenaScreen';
+import { EliteIntroSplash } from './components/common/EliteIntroSplash';
 import { api, DEMO_APPROVALS } from './api/client';
 import {
   Shield,
@@ -23,10 +25,14 @@ import {
   Mic,
   Zap,
   Lock,
+  RotateCcw,
 } from 'lucide-react';
 import './App.css';
 
+gsap.registerPlugin(ScrollTrigger);
+
 export function App() {
+  const [showSplash, setShowSplash] = useState<boolean>(true);
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('live-run');
   const [pendingCount, setPendingCount] = useState<number>(DEMO_APPROVALS.length);
   const [commandPrompt, setCommandPrompt] = useState<string>('');
@@ -52,36 +58,72 @@ export function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // GSAP: Initial Page & Window Mount Entrance (Strict-Mode safe with gsap.context & fromTo)
+  // Mascot Floating Idle Animation
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      if (windowRef.current) {
-        gsap.fromTo(
-          windowRef.current,
-          { opacity: 0, y: 28, scale: 0.985 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'power3.out' }
-        );
-      }
-
-      gsap.fromTo(
-        '.sidebar-nav-btn',
-        { opacity: 0, x: -12 },
-        { opacity: 1, x: 0, stagger: 0.04, duration: 0.45, ease: 'back.out(1.4)', delay: 0.1 }
-      );
-
-      if (mascotRef.current) {
-        gsap.to(mascotRef.current, {
-          y: -7,
-          duration: 2.4,
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
-        });
-      }
+    if (!mascotRef.current) return;
+    const tween = gsap.to(mascotRef.current, {
+      y: -8,
+      duration: 2.2,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
     });
-
-    return () => ctx.revert();
+    return () => {
+      tween.kill();
+    };
   }, []);
+
+  // Interactive Mouse Parallax for Background Ambience
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const { innerWidth, innerHeight } = window;
+      const xRatio = (e.clientX - innerWidth / 2) / innerWidth;
+      const yRatio = (e.clientY - innerHeight / 2) / innerHeight;
+
+      gsap.to('.nixtio-curves', {
+        x: xRatio * 22,
+        y: yRatio * 22,
+        duration: 1.2,
+        ease: 'power2.out',
+      });
+
+      gsap.to('.nixtio-bg-svg', {
+        x: xRatio * -28,
+        y: yRatio * -28,
+        duration: 1.5,
+        ease: 'power2.out',
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Intro Finish Trigger: Animate main window & dock into view
+  const handleIntroComplete = () => {
+    setShowSplash(false);
+    if (windowRef.current) {
+      gsap.fromTo(
+        windowRef.current,
+        { opacity: 0, y: 35, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.85, ease: 'power4.out' }
+      );
+    }
+
+    gsap.fromTo(
+      '.sidebar-nav-btn',
+      { opacity: 0, x: -16 },
+      { opacity: 1, x: 0, stagger: 0.05, duration: 0.5, ease: 'back.out(1.8)', delay: 0.1 }
+    );
+
+    if (mascotRef.current) {
+      gsap.fromTo(
+        mascotRef.current,
+        { y: -30, opacity: 0, scale: 0.8 },
+        { y: 0, opacity: 1, scale: 1, duration: 0.75, ease: 'back.out(2)', delay: 0.2 }
+      );
+    }
+  };
 
   // GSAP: Smooth Screen Transition
   useEffect(() => {
@@ -89,10 +131,30 @@ export function App() {
       gsap.fromTo(
         contentRef.current,
         { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }
+        { opacity: 1, y: 0, duration: 0.32, ease: 'power2.out' }
       );
     }
   }, [currentScreen]);
+
+  const handleMascotHover = () => {
+    if (!mascotRef.current) return;
+    gsap.to(mascotRef.current, {
+      scale: 1.1,
+      rotation: 5,
+      duration: 0.25,
+      ease: 'back.out(2)',
+    });
+  };
+
+  const handleMascotLeave = () => {
+    if (!mascotRef.current) return;
+    gsap.to(mascotRef.current, {
+      scale: 1,
+      rotation: 0,
+      duration: 0.35,
+      ease: 'power2.out',
+    });
+  };
 
   const navItems: Array<{
     id: ScreenId;
@@ -131,11 +193,14 @@ export function App() {
 
   return (
     <div className="min-h-screen text-slate-800 flex flex-col items-center justify-start py-3 sm:py-6 px-3 sm:px-6 relative overflow-hidden font-sans selection:bg-slate-900 selection:text-white">
+      {/* Elite Title Intro Cinematic Splash Screen */}
+      {showSplash && <EliteIntroSplash onComplete={handleIntroComplete} />}
+
       {/* Abstract curvy lines in the background matching Nixtio shot */}
       <div className="nixtio-curves" />
 
-      {/* Background SVG decorative curves */}
-      <svg className="fixed inset-0 w-full h-full pointer-events-none opacity-40 z-0" xmlns="http://www.w3.org/2000/svg">
+      {/* Background SVG decorative curves with parallax class */}
+      <svg className="nixtio-bg-svg fixed inset-0 w-full h-full pointer-events-none opacity-40 z-0" xmlns="http://www.w3.org/2000/svg">
         <path d="M-100,200 C300,100 600,500 1200,200 C1500,50 1800,400 2000,300" fill="none" stroke="rgba(165,180,252,0.35)" strokeWidth="1.5" />
         <path d="M-100,400 C400,300 700,700 1300,400 C1600,250 1900,600 2200,500" fill="none" stroke="rgba(147,197,253,0.3)" strokeWidth="1.5" />
         <path d="M-50,600 C500,500 800,900 1400,600 C1700,450 2000,800 2300,700" fill="none" stroke="rgba(199,210,254,0.25)" strokeWidth="1.5" />
@@ -210,8 +275,16 @@ export function App() {
               Autonomous Spending Security Console
             </span>
 
-            {/* Right: Black Pill Action Button */}
+            {/* Right: Black Pill Action Button & Replay Intro */}
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowSplash(true)}
+                title="Replay Cinematic Title Intro"
+                className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-semibold text-slate-700 flex items-center gap-1.5 transition-all cursor-pointer"
+              >
+                <RotateCcw size={12} className="text-slate-600" />
+                <span className="hidden sm:inline">Replay Intro</span>
+              </button>
               <button
                 onClick={() => setIsDemoMode(!isDemoMode)}
                 className="nixtio-pill-dark px-4 py-2 text-xs font-semibold flex items-center gap-2 cursor-pointer"
@@ -235,7 +308,12 @@ export function App() {
               </div>
 
               {/* Cute 3D AI Robot Mascot & Speech Bubble */}
-              <div ref={mascotRef} className="relative flex items-center self-end lg:self-center shrink-0 pr-4">
+              <div
+                ref={mascotRef}
+                onMouseEnter={handleMascotHover}
+                onMouseLeave={handleMascotLeave}
+                className="relative flex items-center self-end lg:self-center shrink-0 pr-4 cursor-pointer"
+              >
                 {/* Speech Bubble */}
                 <div className="absolute -top-6 -left-28 bg-white border border-slate-200 shadow-md rounded-2xl px-3 py-1.5 text-[11px] font-semibold text-slate-800 whitespace-nowrap">
                   Hey Alice! 👋 Need a safety check?

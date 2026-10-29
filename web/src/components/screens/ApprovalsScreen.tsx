@@ -17,6 +17,7 @@ import {
 import type { ApprovalItem } from '../../types/api';
 import { api, DEMO_APPROVALS } from '../../api/client';
 import { MoneyDisplay } from '../common/MoneyDisplay';
+import { AnimatedCounter } from '../common/AnimatedCounter';
 
 interface ApprovalsScreenProps {
   onApprovalResolved?: () => void;
@@ -138,7 +139,7 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
           </div>
           <div>
             <div className="text-3xl font-extrabold text-slate-900 font-mono">
-              {pendingList.length}
+              <AnimatedCounter value={pendingList.length} />
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
               Require owner verification
@@ -195,7 +196,7 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
           </div>
           <div>
             <div className="text-3xl font-extrabold text-slate-900 font-mono">
-              {resolvedList.length}
+              <AnimatedCounter value={resolvedList.length} />
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
               Cryptographically signed

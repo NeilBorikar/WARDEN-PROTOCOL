@@ -13,6 +13,7 @@ import {
 import type { ResultsSummary } from '../../types/api';
 import { api, DEMO_RESULTS } from '../../api/client';
 import { MoneyDisplay } from '../common/MoneyDisplay';
+import { AnimatedCounter } from '../common/AnimatedCounter';
 
 export const ResultsScreen: React.FC = () => {
   const [results, setResults] = useState<ResultsSummary>(DEMO_RESULTS);
@@ -99,7 +100,7 @@ export const ResultsScreen: React.FC = () => {
           </div>
           <div>
             <div className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-slate-900">
-              {(currentMetrics.break_in_rate * 100).toFixed(1)}%
+              <AnimatedCounter value={currentMetrics.break_in_rate * 100} suffix="%" decimals={1} />
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
               {isProtectedView ? '0/45 attack scenarios succeeded' : '45/45 attacks deceived agent'}
@@ -139,7 +140,7 @@ export const ResultsScreen: React.FC = () => {
           </div>
           <div>
             <div className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-slate-900">
-              {currentMetrics.p50_latency_ms.toFixed(1)}ms
+              <AnimatedCounter value={currentMetrics.p50_latency_ms} suffix="ms" decimals={1} />
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
               Zero LLM overhead in payment path
@@ -158,7 +159,7 @@ export const ResultsScreen: React.FC = () => {
           </div>
           <div>
             <div className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-slate-900">
-              {defensePercentage}%
+              <AnimatedCounter value={defensePercentage} suffix="%" />
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
               Fail-closed deterministic guard

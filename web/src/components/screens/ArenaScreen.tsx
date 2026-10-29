@@ -13,6 +13,7 @@ import {
 import type { ArenaFeedItem, ArenaLeaderboard, ArenaSession, Verdict } from '../../types/api';
 import { api } from '../../api/client';
 import { VerdictBadge } from '../common/VerdictBadge';
+import { AnimatedCounter } from '../common/AnimatedCounter';
 
 export const ArenaScreen: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -187,7 +188,7 @@ export const ArenaScreen: React.FC = () => {
           </div>
           <div>
             <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900">
-              {leaderboard.total_attempts}
+              <AnimatedCounter value={leaderboard.total_attempts} />
             </div>
             <span className="text-[11px] text-slate-500">Adversarial attempts</span>
           </div>
@@ -204,7 +205,7 @@ export const ArenaScreen: React.FC = () => {
           </div>
           <div>
             <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900">
-              {leaderboard.total_blocked}
+              <AnimatedCounter value={leaderboard.total_blocked} />
             </div>
             <span className="text-[11px] text-blue-700 font-semibold">100% Defense Rate</span>
           </div>
@@ -221,7 +222,7 @@ export const ArenaScreen: React.FC = () => {
           </div>
           <div>
             <div className="text-2xl sm:text-3xl font-black font-mono text-amber-600">
-              {leaderboard.total_escalated}
+              <AnimatedCounter value={leaderboard.total_escalated} />
             </div>
             <span className="text-[11px] text-amber-700">Owner check required</span>
           </div>
@@ -238,7 +239,7 @@ export const ArenaScreen: React.FC = () => {
           </div>
           <div>
             <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900">
-              $0.00
+              <AnimatedCounter value={0} prefix="$" decimals={2} />
             </div>
             <span className="text-[11px] text-blue-700 font-semibold">Unbroken Guarantee</span>
           </div>
