@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
 import {
   Play,
   RotateCcw,
@@ -27,6 +28,9 @@ export const LiveRunScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [activeStep, setActiveStep] = useState<number>(5);
 
+  const cardsContainerRef = useRef<HTMLDivElement>(null);
+  const decisionRef = useRef<HTMLDivElement>(null);
+
   const scenarioCards = [
     {
       id: 'legit' as const,
@@ -43,7 +47,7 @@ export const LiveRunScreen: React.FC = () => {
       desc: 'Adversarial merchant attempts to hijack agent transcript and demand $850 offshore emergency fee.',
       subtext: 'Security Evaluation • Exploit Neutralized',
       expectedVerdict: 'BLOCK',
-      iconClass: 'nixtio-icon-rose',
+      iconClass: 'nixtio-icon-periwinkle',
       icon: Terminal,
     },
     {
@@ -52,10 +56,23 @@ export const LiveRunScreen: React.FC = () => {
       desc: 'Seller claims primary PayPal is down and redirects funds to unlisted evil offshore account.',
       subtext: 'Allowlist Defense • Account Spoofing Blocked',
       expectedVerdict: 'BLOCK',
-      iconClass: 'nixtio-icon-teal',
+      iconClass: 'nixtio-icon-indigo',
       icon: RefreshCw,
     },
   ];
+
+  // GSAP: Animate cards on load
+  useEffect(() => {
+    if (cardsContainerRef.current) {
+      gsap.from(cardsContainerRef.current.children, {
+        opacity: 0,
+        y: 18,
+        stagger: 0.08,
+        duration: 0.55,
+        ease: 'power2.out',
+      });
+    }
+  }, []);
 
   const handleRunScenario = async (scenario: 'legit' | 'injection' | 'swap') => {
     setIsLoading(true);
@@ -67,7 +84,6 @@ export const LiveRunScreen: React.FC = () => {
         scripted: true,
       });
 
-      // Animate turns sequentially
       let step = 1;
       const interval = setInterval(() => {
         step += 1;
@@ -76,6 +92,10 @@ export const LiveRunScreen: React.FC = () => {
           clearInterval(interval);
           setIsLoading(false);
           setCurrentRun(data);
+          
+          if (decisionRef.current) {
+            gsap.fromTo(decisionRef.current, { scale: 0.98 }, { scale: 1, duration: 0.35, ease: 'back.out(2)' });
+          }
         }
       }, 400);
     } catch {
@@ -97,7 +117,7 @@ export const LiveRunScreen: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* 3 Nixtio Feature Cards (Matching the reference image!) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div ref={cardsContainerRef} className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {scenarioCards.map((sc) => {
           const isSelected = selectedScenario === sc.id;
           const Icon = sc.icon;
@@ -194,16 +214,16 @@ export const LiveRunScreen: React.FC = () => {
                   key={idx}
                   className={`p-4 rounded-2xl border transition-all ${
                     isSeller
-                      ? 'bg-rose-50/50 border-rose-150'
+                      ? 'bg-slate-100/70 border-slate-200'
                       : isBuyer
-                      ? 'bg-slate-50 border-slate-200/80'
-                      : 'bg-emerald-50/60 border-emerald-150'
+                      ? 'bg-blue-50/50 border-blue-150'
+                      : 'bg-indigo-50/60 border-indigo-150'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <div className="flex items-center gap-2">
                       <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${
-                        isSeller ? 'bg-rose-100 text-rose-600' : isBuyer ? 'bg-blue-100 text-blue-600' : 'bg-emerald-100 text-emerald-600'
+                        isSeller ? 'bg-slate-200 text-slate-800' : isBuyer ? 'bg-blue-100 text-blue-600' : 'bg-indigo-100 text-indigo-700'
                       }`}>
                         {isSeller ? <Store size={13} /> : isBuyer ? <Bot size={13} /> : <ShieldCheck size={13} />}
                       </div>
@@ -211,7 +231,7 @@ export const LiveRunScreen: React.FC = () => {
                         {turn.role}
                       </span>
                       {isSeller && (
-                        <span className="px-2 py-0.2 rounded-full text-[9px] font-mono font-bold bg-rose-100 text-rose-700">
+                        <span className="px-2 py-0.2 rounded-full text-[9px] font-mono font-bold bg-slate-200 text-slate-800">
                           UNTRUSTED
                         </span>
                       )}
@@ -221,7 +241,7 @@ export const LiveRunScreen: React.FC = () => {
                         </span>
                       )}
                       {isBouncer && (
-                        <span className="px-2 py-0.2 rounded-full text-[9px] font-mono font-bold bg-emerald-100 text-emerald-700">
+                        <span className="px-2 py-0.2 rounded-full text-[9px] font-mono font-bold bg-indigo-100 text-indigo-700">
                           DETERMINISTIC_BOUNCER
                         </span>
                       )}
@@ -272,7 +292,7 @@ export const LiveRunScreen: React.FC = () => {
           {/* Footer Bar */}
           <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 text-[11px] text-slate-500 flex items-center justify-between">
             <span className="flex items-center gap-1.5 font-semibold text-slate-700">
-              <Lock size={12} className="text-emerald-500" />
+              <Lock size={12} className="text-blue-600" />
               Principle P1: Deterministic verification. Zero LLMs in payment path.
             </span>
             <span className="font-mono text-slate-500 uppercase font-bold">
@@ -285,7 +305,7 @@ export const LiveRunScreen: React.FC = () => {
         <div className="lg:col-span-5 space-y-4">
           
           {/* Main Verdict & Policy Assessment Card */}
-          <div className="nixtio-card p-5 space-y-4">
+          <div ref={decisionRef} className="nixtio-card p-5 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center">
@@ -376,7 +396,7 @@ export const LiveRunScreen: React.FC = () => {
             )}
           </div>
 
-          {/* Rail Execution Card */}
+          {/* Rail Execution Card (Zero Greens/Reds) */}
           <div className="nixtio-card p-4 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
               <Zap size={14} className="text-blue-500" />
@@ -384,15 +404,15 @@ export const LiveRunScreen: React.FC = () => {
             </h4>
             
             {currentRun.payment_executed ? (
-              <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 text-xs text-emerald-900">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+              <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-2xl flex items-center gap-3 text-xs text-blue-950">
+                <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
                   <CheckCircle2 size={18} />
                 </div>
                 <div>
-                  <span className="font-bold block text-emerald-950">
+                  <span className="font-bold block text-blue-950">
                     Payout Dispatched via PayPal Rail
                   </span>
-                  <span className="font-mono text-[11px] text-emerald-700 font-semibold">
+                  <span className="font-mono text-[11px] text-blue-700 font-semibold">
                     Tx ID: {currentRun.rail_payment_id || 'PAYPAL-MOCK-TX-4921'}
                   </span>
                 </div>
@@ -412,15 +432,15 @@ export const LiveRunScreen: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-900">
-                <div className="w-8 h-8 rounded-xl bg-rose-100 flex items-center justify-center text-rose-600 shrink-0">
+              <div className="p-3.5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-3 text-xs text-slate-900">
+                <div className="w-8 h-8 rounded-xl bg-slate-200 flex items-center justify-center text-slate-800 shrink-0">
                   <ShieldAlert size={18} />
                 </div>
                 <div>
-                  <span className="font-bold block text-rose-950">
+                  <span className="font-bold block text-slate-950">
                     Funds Secured (Loss: $0.00)
                   </span>
-                  <span className="text-[11px] text-rose-700 leading-snug">
+                  <span className="text-[11px] text-slate-600 leading-snug">
                     Transaction rejected. Agent was blocked from accessing PayPal credentials.
                   </span>
                 </div>

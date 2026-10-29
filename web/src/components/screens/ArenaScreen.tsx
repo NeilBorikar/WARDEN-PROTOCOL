@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
 import {
   Send,
   Trophy,
@@ -7,12 +8,15 @@ import {
   Activity,
   AlertOctagon,
   Flame,
+  ShieldCheck,
 } from 'lucide-react';
 import type { ArenaFeedItem, ArenaLeaderboard, ArenaSession, Verdict } from '../../types/api';
 import { api } from '../../api/client';
 import { VerdictBadge } from '../common/VerdictBadge';
 
 export const ArenaScreen: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const verdictCardRef = useRef<HTMLDivElement>(null);
   const [session, setSession] = useState<ArenaSession | null>(null);
   const [leaderboard, setLeaderboard] = useState<ArenaLeaderboard>({
     total_attempts: 142,
@@ -47,6 +51,40 @@ export const ArenaScreen: React.FC = () => {
     api.getArenaLeaderboard().then(setLeaderboard).catch(console.error);
     api.getArenaFeed().then(setFeed).catch(console.error);
   }, []);
+
+  // GSAP Entry Animation
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.from('.arena-kpi', {
+        opacity: 0,
+        y: 16,
+        duration: 0.45,
+        stagger: 0.08,
+        ease: 'power2.out',
+      });
+      gsap.from('.arena-panel', {
+        opacity: 0,
+        y: 20,
+        duration: 0.55,
+        stagger: 0.12,
+        ease: 'power2.out',
+        delay: 0.15,
+      });
+    }, containerRef);
+    return () => ctx.revert();
+  }, []);
+
+  // GSAP animation on verdict appearance
+  useEffect(() => {
+    if (lastVerdict && verdictCardRef.current) {
+      gsap.fromTo(
+        verdictCardRef.current,
+        { scale: 0.95, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.4)' }
+      );
+    }
+  }, [lastVerdict]);
 
   const attackPresets = [
     {
@@ -140,10 +178,10 @@ export const ArenaScreen: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* 4 Leaderboard Metric Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="nixtio-card p-5 flex flex-col justify-between">
+        <div className="arena-kpi nixtio-card p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">
               Total Exploits
@@ -160,24 +198,24 @@ export const ArenaScreen: React.FC = () => {
           </div>
         </div>
 
-        <div className="nixtio-card p-5 flex flex-col justify-between">
+        <div className="arena-kpi nixtio-card p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">
               Attacks Blocked
             </span>
-            <div className="w-8 h-8 rounded-xl nixtio-icon-emerald flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl nixtio-icon-blue flex items-center justify-center">
               <CheckCircle2 size={16} />
             </div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-600">
+            <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900">
               {leaderboard.total_blocked}
             </div>
-            <span className="text-[11px] text-emerald-700 font-semibold">100% Defense Rate</span>
+            <span className="text-[11px] text-blue-700 font-semibold">100% Defense Rate</span>
           </div>
         </div>
 
-        <div className="nixtio-card p-5 flex flex-col justify-between">
+        <div className="arena-kpi nixtio-card p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">
               Escalated to Owner
@@ -194,7 +232,7 @@ export const ArenaScreen: React.FC = () => {
           </div>
         </div>
 
-        <div className="nixtio-card p-5 flex flex-col justify-between">
+        <div className="arena-kpi nixtio-card p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">
               Money Stolen
@@ -207,7 +245,7 @@ export const ArenaScreen: React.FC = () => {
             <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900">
               $0.00
             </div>
-            <span className="text-[11px] text-emerald-600 font-bold">Unbroken Guarantee</span>
+            <span className="text-[11px] text-blue-700 font-semibold">Unbroken Guarantee</span>
           </div>
         </div>
       </div>
@@ -216,10 +254,10 @@ export const ArenaScreen: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Left Column: Attack Crafting Terminal (7 cols) */}
-        <div className="lg:col-span-7 nixtio-card p-5 sm:p-6 space-y-4">
+        <div className="arena-panel lg:col-span-7 nixtio-card p-5 sm:p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-150 pb-3">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl nixtio-icon-rose flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl nixtio-icon-periwinkle flex items-center justify-center">
                 <Skull size={16} />
               </div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
@@ -323,7 +361,7 @@ export const ArenaScreen: React.FC = () => {
             <button
               type="submit"
               disabled={isSending}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-slate-900 hover:bg-black disabled:opacity-50 text-white font-bold shadow-md transition-all cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-full nixtio-pill-dark font-bold shadow-md transition-all cursor-pointer"
             >
               <Send size={14} />
               <span>{isSending ? 'Transmitting Attack Vector...' : 'Launch Adversarial Payload Against Buyer'}</span>
@@ -332,7 +370,7 @@ export const ArenaScreen: React.FC = () => {
 
           {/* Verdict Response Card */}
           {lastVerdict && (
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+            <div ref={verdictCardRef} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
               <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-800">
                   Victim Agent & Bouncer Interception
@@ -350,8 +388,8 @@ export const ArenaScreen: React.FC = () => {
               <div className="space-y-1 text-xs">
                 <span className="text-slate-400 font-semibold block">Warden Bouncer Defense:</span>
                 {lastVerdict.reasons.map((r, i) => (
-                  <div key={i} className="text-rose-600 font-mono text-[11px] flex items-start gap-1.5 font-bold">
-                    <span>🛑</span>
+                  <div key={i} className="text-slate-800 font-mono text-[11px] flex items-start gap-1.5 font-medium bg-white p-2 rounded-xl border border-slate-200">
+                    <ShieldCheck size={14} className="text-blue-600 shrink-0 mt-0.5" />
                     <span>{r}</span>
                   </div>
                 ))}
@@ -361,7 +399,7 @@ export const ArenaScreen: React.FC = () => {
         </div>
 
         {/* Right Column: Live Decision Feed (5 cols) */}
-        <div className="lg:col-span-5 nixtio-card p-5 space-y-3.5">
+        <div className="arena-panel lg:col-span-5 nixtio-card p-5 space-y-3.5">
           <div className="flex items-center justify-between border-b border-slate-150 pb-3">
             <div className="flex items-center gap-2">
               <Flame size={18} className="text-amber-500" />
@@ -369,8 +407,8 @@ export const ArenaScreen: React.FC = () => {
                 Live Attack Decision Stream
               </h3>
             </div>
-            <span className="text-[10px] font-mono text-emerald-600 flex items-center gap-1 font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[10px] font-mono text-blue-600 flex items-center gap-1.5 font-semibold">
+              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
               Streaming Live
             </span>
           </div>
@@ -393,7 +431,7 @@ export const ArenaScreen: React.FC = () => {
                 </p>
 
                 <div className="text-[10px] text-slate-500 flex justify-between items-center pt-1.5 border-t border-slate-200/60">
-                  <span className="text-emerald-600 font-bold">Stolen: $0.00</span>
+                  <span className="text-blue-700 font-semibold">Stolen: $0.00</span>
                   <span className="text-slate-400 truncate max-w-[150px]">{item.reasons[0] || 'BLOCKED'}</span>
                 </div>
               </div>

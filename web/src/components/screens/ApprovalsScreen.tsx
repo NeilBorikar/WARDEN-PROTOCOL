@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
 import {
   CheckCircle,
   Clock,
@@ -34,6 +35,8 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
     txId?: string;
   } | null>(null);
 
+  const listRef = useRef<HTMLDivElement>(null);
+
   const fetchApprovals = async () => {
     setIsLoading(true);
     try {
@@ -49,6 +52,19 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
   useEffect(() => {
     fetchApprovals();
   }, []);
+
+  // GSAP: Animate cards when list updates
+  useEffect(() => {
+    if (listRef.current && listRef.current.children.length > 0) {
+      gsap.from(listRef.current.children, {
+        opacity: 0,
+        y: 12,
+        stagger: 0.05,
+        duration: 0.4,
+        ease: 'power2.out',
+      });
+    }
+  }, [activeFilter, approvals]);
 
   const handleOpenModal = (appr: ApprovalItem, type: 'approve' | 'deny') => {
     setSelectedApproval(appr);
@@ -154,7 +170,7 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
               Hard Cap Bounded
             </span>
-            <div className="w-9 h-9 rounded-2xl nixtio-icon-emerald flex items-center justify-center">
+            <div className="w-9 h-9 rounded-2xl nixtio-icon-indigo flex items-center justify-center">
               <ShieldCheck size={16} />
             </div>
           </div>
@@ -188,20 +204,20 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
         </div>
       </div>
 
-      {/* Resolution Toast Notification */}
+      {/* Resolution Toast Notification (Zero greens / reds) */}
       {resolutionNotice && (
         <div
           className={`p-4 rounded-2xl border flex items-center justify-between gap-3 shadow-md ${
             resolutionNotice.type === 'success'
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-              : 'bg-rose-50 border-rose-200 text-rose-900'
+              ? 'bg-blue-50 border-blue-200 text-blue-900'
+              : 'bg-slate-100 border-slate-200 text-slate-900'
           }`}
         >
           <div className="flex items-center gap-2.5">
             {resolutionNotice.type === 'success' ? (
-              <CheckCircle size={18} className="text-emerald-600 shrink-0" />
+              <CheckCircle size={18} className="text-blue-600 shrink-0" />
             ) : (
-              <ShieldAlert size={18} className="text-rose-600 shrink-0" />
+              <ShieldAlert size={18} className="text-slate-700 shrink-0" />
             )}
             <div className="text-xs">
               <span className="font-bold">{resolutionNotice.msg}</span>
@@ -267,7 +283,7 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
       </div>
 
       {/* Approvals Cards Grid */}
-      <div className="space-y-3.5">
+      <div ref={listRef} className="space-y-3.5">
         {displayedList.length === 0 ? (
           <div className="text-center py-12 rounded-3xl border border-dashed border-slate-200 bg-white/60">
             <Inbox size={32} className="mx-auto text-slate-300 mb-2" />
@@ -306,11 +322,11 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
                           PENDING OWNER REVIEW
                         </span>
                       ) : isApproved ? (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-100 text-blue-800 border border-blue-200">
                           APPROVED BY OWNER
                         </span>
                       ) : (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-900 text-white">
                           DENIED BY OWNER
                         </span>
                       )}
@@ -348,7 +364,7 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
                     )}
                   </div>
 
-                  {/* Right Column: Actions */}
+                  {/* Right Column: Actions (Zero Greens / Reds) */}
                   {isPending && (
                     <div className="flex items-center gap-2 shrink-0 w-full lg:w-auto">
                       <button
@@ -361,7 +377,7 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
 
                       <button
                         onClick={() => handleOpenModal(appr, 'deny')}
-                        className="px-4 py-2.5 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-all cursor-pointer"
+                        className="px-4 py-2.5 rounded-full border border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all cursor-pointer"
                       >
                         <X size={15} />
                         <span>Reject</span>
@@ -382,9 +398,7 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
           <div className="w-full max-w-lg nixtio-card p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-150">
               <div className="flex items-center gap-2.5">
-                <div className={`w-9 h-9 rounded-2xl flex items-center justify-center text-white ${
-                  actionType === 'approve' ? 'bg-slate-900' : 'bg-rose-600'
-                }`}>
+                <div className="w-9 h-9 rounded-2xl flex items-center justify-center text-white bg-slate-900">
                   {actionType === 'approve' ? <KeyRound size={17} /> : <AlertTriangle size={17} />}
                 </div>
                 <div>
@@ -451,9 +465,7 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
               </button>
               <button
                 onClick={handleConfirmAction}
-                className={`nixtio-pill-dark px-5 py-2.5 text-xs font-bold cursor-pointer ${
-                  actionType === 'deny' ? '!bg-rose-600 hover:!bg-rose-700' : ''
-                }`}
+                className="nixtio-pill-dark px-5 py-2.5 text-xs font-bold cursor-pointer"
               >
                 {actionType === 'approve' ? 'Sign & Dispatch to PayPal Rail' : 'Confirm Rejection'}
               </button>

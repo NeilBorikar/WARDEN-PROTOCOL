@@ -1,15 +1,9 @@
-/* Nixtio AI Assistant Helper Styles */
+/* Nixtio AI Assistant Cohesive Palette Styles (Harmonious with lavender/ice-blue background) */
 
 .nixtio-icon-orange {
   background: #FFF7ED;
-  color: #F97316;
+  color: #EA580C;
   border: 1px solid #FFEDD5;
-}
-
-.nixtio-icon-teal {
-  background: #F0FDFA;
-  color: #0D9488;
-  border: 1px solid #CCFBF1;
 }
 
 .nixtio-icon-blue {
@@ -18,22 +12,28 @@
   border: 1px solid #DBEAFE;
 }
 
-.nixtio-icon-purple {
-  background: #FAF5FF;
-  color: #9333EA;
-  border: 1px solid #F3E8FF;
+.nixtio-icon-indigo {
+  background: #EEF2FF;
+  color: #4F46E5;
+  border: 1px solid #E0E7FF;
 }
 
-.nixtio-icon-emerald {
-  background: #ECFDF5;
-  color: #059669;
-  border: 1px solid #D1FAE5;
+.nixtio-icon-periwinkle {
+  background: #F5F3FF;
+  color: #7C3AED;
+  border: 1px solid #EDE9FE;
 }
 
-.nixtio-icon-rose {
-  background: #FFF1F2;
-  color: #E11D48;
-  border: 1px solid #FFE4E6;
+.nixtio-icon-slate {
+  background: #F1F5F9;
+  color: #334155;
+  border: 1px solid #E2E8F0;
+}
+
+.nixtio-icon-teal {
+  background: #F0FDFA;
+  color: #0284C7;
+  border: 1px solid #E0F2FE;
 }
 
 /* Bottom command bar pill input */

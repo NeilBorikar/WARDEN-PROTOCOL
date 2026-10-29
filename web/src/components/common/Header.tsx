@@ -62,23 +62,23 @@ export const Header: React.FC<HeaderProps> = ({
                     <Shield size={20} className="stroke-[2.5]" />
                   </div>
                 </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-950 animate-ping opacity-75" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-950" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full border-2 border-white animate-ping opacity-75" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full border-2 border-white" />
               </div>
 
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-extrabold tracking-tight text-sm sm:text-base text-slate-900 dark:text-white">
+                  <span className="font-extrabold tracking-tight text-sm sm:text-base text-slate-900">
                     WARDEN PROTOCOL
                   </span>
-                  <span className="px-1.5 py-0.5 bg-blue-500/10 dark:bg-blue-400/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-mono rounded-md font-bold">
+                  <span className="px-1.5 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-600 text-[10px] font-mono rounded-md font-bold">
                     v0.1.0
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
                   <span>PayPal AI Security Console</span>
-                  <span className="text-slate-300 dark:text-slate-700">•</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                  <span className="text-slate-300">•</span>
+                  <span className="text-blue-600 font-semibold flex items-center gap-1">
                     <Radio size={10} className="animate-pulse" /> Fail-Closed
                   </span>
                 </div>

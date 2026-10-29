@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
 import {
   History,
   ShieldCheck,
@@ -28,6 +29,8 @@ export const AuditScreen: React.FC = () => {
   const [expandedSeq, setExpandedSeq] = useState<number | null>(null);
   const [, setCopiedHash] = useState<string | null>(null);
 
+  const timelineRef = useRef<HTMLDivElement>(null);
+
   const fetchEvents = async () => {
     setIsLoading(true);
     try {
@@ -43,6 +46,19 @@ export const AuditScreen: React.FC = () => {
   useEffect(() => {
     fetchEvents();
   }, [typeFilter]);
+
+  // GSAP: Animate timeline blocks
+  useEffect(() => {
+    if (timelineRef.current && timelineRef.current.children.length > 0) {
+      gsap.from(timelineRef.current.children, {
+        opacity: 0,
+        y: 12,
+        stagger: 0.04,
+        duration: 0.4,
+        ease: 'power2.out',
+      });
+    }
+  }, [typeFilter, searchQuery, events]);
 
   const handleVerifyChain = async () => {
     setIsVerifying(true);
@@ -110,18 +126,18 @@ export const AuditScreen: React.FC = () => {
         </button>
       </div>
 
-      {/* Verification Status Card */}
+      {/* Verification Status Card (Zero greens/reds) */}
       {verificationResult && (
         <div
           className={`p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs ${
             verificationResult.is_valid
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-950'
-              : 'bg-rose-50 border-rose-200 text-rose-950'
+              ? 'bg-blue-50 border-blue-200 text-blue-950'
+              : 'bg-slate-100 border-slate-200 text-slate-950'
           }`}
         >
           <div className="flex items-center gap-2.5">
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 ${
-              verificationResult.is_valid ? 'bg-emerald-600' : 'bg-rose-600'
+              verificationResult.is_valid ? 'bg-blue-600' : 'bg-slate-900'
             }`}>
               {verificationResult.is_valid ? <Check size={16} /> : <AlertTriangle size={16} />}
             </div>
@@ -175,7 +191,7 @@ export const AuditScreen: React.FC = () => {
       </div>
 
       {/* Cryptographic Hash Chain Timeline */}
-      <div className="space-y-3">
+      <div ref={timelineRef} className="space-y-3">
         {filteredEvents.map((ev) => {
           const isExpanded = expandedSeq === ev.seq;
 

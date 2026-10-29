@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
 import { type ScreenId } from './components/common/Header';
 import { LiveRunScreen } from './components/screens/LiveRunScreen';
 import { ApprovalsScreen } from './components/screens/ApprovalsScreen';
@@ -31,6 +32,10 @@ export function App() {
   const [commandPrompt, setCommandPrompt] = useState<string>('');
   const [isDemoMode, setIsDemoMode] = useState<boolean>(true);
 
+  const windowRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLElement>(null);
+  const mascotRef = useRef<HTMLDivElement>(null);
+
   // Sync pending approvals count
   const refreshPendingCount = async () => {
     try {
@@ -46,6 +51,49 @@ export function App() {
     const interval = setInterval(refreshPendingCount, 15000);
     return () => clearInterval(interval);
   }, []);
+
+  // GSAP: Initial Page & Window Mount Entrance
+  useEffect(() => {
+    if (windowRef.current) {
+      gsap.from(windowRef.current, {
+        opacity: 0,
+        y: 28,
+        scale: 0.985,
+        duration: 0.85,
+        ease: 'power3.out',
+      });
+    }
+
+    gsap.from('.sidebar-nav-btn', {
+      opacity: 0,
+      x: -15,
+      stagger: 0.05,
+      duration: 0.5,
+      ease: 'back.out(1.5)',
+      delay: 0.2,
+    });
+
+    if (mascotRef.current) {
+      gsap.to(mascotRef.current, {
+        y: -7,
+        duration: 2.4,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      });
+    }
+  }, []);
+
+  // GSAP: Smooth Screen Transition
+  useEffect(() => {
+    if (contentRef.current) {
+      gsap.fromTo(
+        contentRef.current,
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.38, ease: 'power2.out' }
+      );
+    }
+  }, [currentScreen]);
 
   const navItems: Array<{
     id: ScreenId;
@@ -94,11 +142,13 @@ export function App() {
         <path d="M-50,600 C500,500 800,900 1400,600 C1700,450 2000,800 2300,700" fill="none" stroke="rgba(199,210,254,0.25)" strokeWidth="1.5" />
       </svg>
 
-      {/* Main Nixtio Floating App Window (Expanded generous width) */}
-      <div className="nixtio-window w-full max-w-[97vw] xl:max-w-[1740px] 2xl:max-w-[1860px] rounded-[32px] sm:rounded-[44px] flex flex-col md:flex-row relative z-10 overflow-hidden my-auto">
-        
+      {/* Main Nixtio Floating App Window (Generous Widescreen Canvas) */}
+      <div
+        ref={windowRef}
+        className="nixtio-window w-full max-w-[97vw] xl:max-w-[1740px] 2xl:max-w-[1860px] rounded-[32px] sm:rounded-[44px] flex flex-col md:flex-row relative z-10 overflow-hidden my-auto"
+      >
         {/* Left Vertical Dock / Sidebar (Identical to Nixtio shot) */}
-        <aside className="w-full md:w-20 bg-white/70 border-b md:border-b-0 md:border-r border-slate-200/70 flex md:flex-col items-center justify-between p-3 sm:p-5 shrink-0 backdrop-blur-md">
+        <aside className="w-full md:w-20 bg-white/75 border-b md:border-b-0 md:border-r border-slate-200/70 flex md:flex-col items-center justify-between p-3 sm:p-5 shrink-0 backdrop-blur-md">
           {/* Top Round Black Plus Action Button */}
           <button
             onClick={() => setCurrentScreen('live-run')}
@@ -118,7 +168,7 @@ export function App() {
                   key={item.id}
                   onClick={() => setCurrentScreen(item.id)}
                   title={item.label}
-                  className={`relative p-2.5 rounded-full transition-all cursor-pointer ${
+                  className={`sidebar-nav-btn relative p-2.5 rounded-full transition-all cursor-pointer ${
                     isActive
                       ? 'bg-slate-900 text-white shadow-sm'
                       : 'text-slate-400 hover:text-slate-800 hover:bg-slate-100'
@@ -167,13 +217,13 @@ export function App() {
                 onClick={() => setIsDemoMode(!isDemoMode)}
                 className="nixtio-pill-dark px-4 py-2 text-xs font-semibold flex items-center gap-2 cursor-pointer"
               >
-                <Radio size={12} className="text-emerald-400 animate-pulse" />
+                <Radio size={12} className="text-blue-400 animate-pulse" />
                 <span>{isDemoMode ? 'Cassette Replay' : 'Live PayPal Rail'}</span>
               </button>
             </div>
           </header>
 
-          {/* Hero Greeting & Cute AI Robot Mascot (Identical to Nixtio shot) */}
+          {/* Hero Greeting & Cute AI Robot Mascot */}
           <div className="relative mb-7">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
               <div className="max-w-xl">
@@ -186,7 +236,7 @@ export function App() {
               </div>
 
               {/* Cute 3D AI Robot Mascot & Speech Bubble */}
-              <div className="relative flex items-center self-end lg:self-center shrink-0 pr-4 animate-mascot">
+              <div ref={mascotRef} className="relative flex items-center self-end lg:self-center shrink-0 pr-4">
                 {/* Speech Bubble */}
                 <div className="absolute -top-6 -left-28 bg-white border border-slate-200 shadow-md rounded-2xl px-3 py-1.5 text-[11px] font-semibold text-slate-800 whitespace-nowrap">
                   Hey Alice! 👋 Need a safety check?
@@ -195,25 +245,17 @@ export function App() {
 
                 {/* 3D Robot Vector Illustration */}
                 <svg width="76" height="76" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-lg">
-                  {/* Floating Shadow */}
                   <ellipse cx="50" cy="94" rx="28" ry="4" fill="rgba(100,116,139,0.18)" />
-                  {/* Body */}
                   <rect x="28" y="52" width="44" height="34" rx="17" fill="url(#bot_body)" />
                   <rect x="34" y="58" width="32" height="22" rx="11" fill="#FFFFFF" />
                   <circle cx="50" cy="69" r="5" fill="#3B82F6" />
-                  {/* Neck */}
                   <rect x="44" y="46" width="12" height="8" rx="4" fill="#94A3B8" />
-                  {/* Head */}
                   <rect x="20" y="16" width="60" height="34" rx="17" fill="url(#bot_head)" stroke="#E2E8F0" strokeWidth="1.5" />
-                  {/* Face Screen */}
                   <rect x="26" y="21" width="48" height="24" rx="12" fill="#0F172A" />
-                  {/* Glowing Eyes */}
                   <ellipse cx="40" cy="33" rx="5" ry="4" fill="#38BDF8" />
                   <ellipse cx="60" cy="33" rx="5" ry="4" fill="#38BDF8" />
-                  {/* Head Antenna */}
                   <rect x="48" y="8" width="4" height="9" rx="2" fill="#94A3B8" />
                   <circle cx="50" cy="7" r="4" fill="#3B82F6" />
-                  {/* Gradient defs */}
                   <defs>
                     <linearGradient id="bot_head" x1="20" y1="16" x2="80" y2="50" gradientUnits="userSpaceOnUse">
                       <stop stopColor="#FFFFFF" />
@@ -229,8 +271,8 @@ export function App() {
             </div>
           </div>
 
-          {/* Active Screen Viewport */}
-          <main className="flex-1 min-h-[460px] pb-6">
+          {/* Active Screen Viewport with GSAP ref */}
+          <main ref={contentRef} className="flex-1 min-h-[460px] pb-6">
             {currentScreen === 'live-run' && <LiveRunScreen />}
             {currentScreen === 'approvals' && (
               <ApprovalsScreen onApprovalResolved={refreshPendingCount} />
@@ -246,7 +288,7 @@ export function App() {
             {/* Top Caption Row */}
             <div className="flex items-center justify-between text-[11px] font-medium text-slate-400 mb-2.5 px-2">
               <span className="flex items-center gap-1.5 text-slate-600 font-semibold">
-                <Lock size={12} className="text-emerald-500" />
+                <Lock size={12} className="text-blue-600" />
                 Owner-Signed Ed25519 Spending Security
               </span>
               <span>Worst-case loss strictly capped at $0.00</span>
