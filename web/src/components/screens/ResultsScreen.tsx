@@ -25,17 +25,17 @@ export const ResultsScreen: React.FC = () => {
     api.getResults().then(setResults).catch(() => setResults(DEMO_RESULTS));
   }, []);
 
-  // GSAP: Animate cards on mode toggle
+  // GSAP: Animate cards on mode toggle (StrictMode safe)
   useEffect(() => {
-    if (kpiRef.current && kpiRef.current.children.length > 0) {
-      gsap.from(kpiRef.current.children, {
-        opacity: 0,
-        scale: 0.96,
-        stagger: 0.06,
-        duration: 0.45,
-        ease: 'power2.out',
-      });
-    }
+    if (!kpiRef.current || kpiRef.current.children.length === 0) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        kpiRef.current!.children,
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, stagger: 0.06, duration: 0.4, ease: 'power2.out' }
+      );
+    }, kpiRef);
+    return () => ctx.revert();
   }, [isProtectedView]);
 
   const currentMetrics = isProtectedView ? results.metrics_protected : results.metrics_naive;

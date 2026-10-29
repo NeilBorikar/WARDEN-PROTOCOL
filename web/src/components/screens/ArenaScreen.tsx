@@ -52,25 +52,20 @@ export const ArenaScreen: React.FC = () => {
     api.getArenaFeed().then(setFeed).catch(console.error);
   }, []);
 
-  // GSAP Entry Animation
+  // GSAP Entry Animation (StrictMode safe)
   useEffect(() => {
     if (!containerRef.current) return;
     const ctx = gsap.context(() => {
-      gsap.from('.arena-kpi', {
-        opacity: 0,
-        y: 16,
-        duration: 0.45,
-        stagger: 0.08,
-        ease: 'power2.out',
-      });
-      gsap.from('.arena-panel', {
-        opacity: 0,
-        y: 20,
-        duration: 0.55,
-        stagger: 0.12,
-        ease: 'power2.out',
-        delay: 0.15,
-      });
+      gsap.fromTo(
+        '.arena-kpi',
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: 'power2.out' }
+      );
+      gsap.fromTo(
+        '.arena-panel',
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.55, stagger: 0.12, ease: 'power2.out', delay: 0.1 }
+      );
     }, containerRef);
     return () => ctx.revert();
   }, []);

@@ -53,17 +53,17 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
     fetchApprovals();
   }, []);
 
-  // GSAP: Animate cards when list updates
+  // GSAP: Animate cards when list updates (StrictMode safe)
   useEffect(() => {
-    if (listRef.current && listRef.current.children.length > 0) {
-      gsap.from(listRef.current.children, {
-        opacity: 0,
-        y: 12,
-        stagger: 0.05,
-        duration: 0.4,
-        ease: 'power2.out',
-      });
-    }
+    if (!listRef.current || listRef.current.children.length === 0) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        listRef.current!.children,
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, stagger: 0.05, duration: 0.4, ease: 'power2.out' }
+      );
+    }, listRef);
+    return () => ctx.revert();
   }, [activeFilter, approvals]);
 
   const handleOpenModal = (appr: ApprovalItem, type: 'approve' | 'deny') => {

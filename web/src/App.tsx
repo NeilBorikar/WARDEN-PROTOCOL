@@ -52,36 +52,35 @@ export function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // GSAP: Initial Page & Window Mount Entrance
+  // GSAP: Initial Page & Window Mount Entrance (Strict-Mode safe with gsap.context & fromTo)
   useEffect(() => {
-    if (windowRef.current) {
-      gsap.from(windowRef.current, {
-        opacity: 0,
-        y: 28,
-        scale: 0.985,
-        duration: 0.85,
-        ease: 'power3.out',
-      });
-    }
+    const ctx = gsap.context(() => {
+      if (windowRef.current) {
+        gsap.fromTo(
+          windowRef.current,
+          { opacity: 0, y: 28, scale: 0.985 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'power3.out' }
+        );
+      }
 
-    gsap.from('.sidebar-nav-btn', {
-      opacity: 0,
-      x: -15,
-      stagger: 0.05,
-      duration: 0.5,
-      ease: 'back.out(1.5)',
-      delay: 0.2,
+      gsap.fromTo(
+        '.sidebar-nav-btn',
+        { opacity: 0, x: -12 },
+        { opacity: 1, x: 0, stagger: 0.04, duration: 0.45, ease: 'back.out(1.4)', delay: 0.1 }
+      );
+
+      if (mascotRef.current) {
+        gsap.to(mascotRef.current, {
+          y: -7,
+          duration: 2.4,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+        });
+      }
     });
 
-    if (mascotRef.current) {
-      gsap.to(mascotRef.current, {
-        y: -7,
-        duration: 2.4,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
-      });
-    }
+    return () => ctx.revert();
   }, []);
 
   // GSAP: Smooth Screen Transition
@@ -89,8 +88,8 @@ export function App() {
     if (contentRef.current) {
       gsap.fromTo(
         contentRef.current,
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: 0.38, ease: 'power2.out' }
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }
       );
     }
   }, [currentScreen]);

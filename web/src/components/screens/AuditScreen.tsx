@@ -47,17 +47,17 @@ export const AuditScreen: React.FC = () => {
     fetchEvents();
   }, [typeFilter]);
 
-  // GSAP: Animate timeline blocks
+  // GSAP: Animate timeline blocks (StrictMode safe)
   useEffect(() => {
-    if (timelineRef.current && timelineRef.current.children.length > 0) {
-      gsap.from(timelineRef.current.children, {
-        opacity: 0,
-        y: 12,
-        stagger: 0.04,
-        duration: 0.4,
-        ease: 'power2.out',
-      });
-    }
+    if (!timelineRef.current || timelineRef.current.children.length === 0) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        timelineRef.current!.children,
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, stagger: 0.04, duration: 0.4, ease: 'power2.out' }
+      );
+    }, timelineRef);
+    return () => ctx.revert();
   }, [typeFilter, searchQuery, events]);
 
   const handleVerifyChain = async () => {

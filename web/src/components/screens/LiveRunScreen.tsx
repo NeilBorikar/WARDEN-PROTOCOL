@@ -61,17 +61,17 @@ export const LiveRunScreen: React.FC = () => {
     },
   ];
 
-  // GSAP: Animate cards on load
+  // GSAP: Animate cards on load (StrictMode-safe)
   useEffect(() => {
-    if (cardsContainerRef.current) {
-      gsap.from(cardsContainerRef.current.children, {
-        opacity: 0,
-        y: 18,
-        stagger: 0.08,
-        duration: 0.55,
-        ease: 'power2.out',
-      });
-    }
+    if (!cardsContainerRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        cardsContainerRef.current!.children,
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, stagger: 0.08, duration: 0.5, ease: 'power2.out' }
+      );
+    }, cardsContainerRef);
+    return () => ctx.revert();
   }, []);
 
   const handleRunScenario = async (scenario: 'legit' | 'injection' | 'swap') => {
