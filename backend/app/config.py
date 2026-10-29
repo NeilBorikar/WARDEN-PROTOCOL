@@ -17,12 +17,20 @@ class Settings(BaseSettings):
     paypal_client_id: str = ""
     paypal_client_secret: str = ""
     paypal_base_url: str = "https://api-m.sandbox.paypal.com"
+    paypal_mode: str = "sandbox"
+    paypal_webhook_id: str = ""
+    primary_rail: str = "mock"
+
+    # ─── AI Providers ───
+    openai_api_key: str = ""
+    anthropic_api_key: str = ""
 
     # ─── Database ───
     database_url: str = "sqlite:///./mandate_arena.db"
 
     # ─── App ───
     app_env: str = "development"
+    environment: str = "development"
     log_level: str = "INFO"
     secret_key: str = "change-me-to-a-random-string"
 
@@ -33,7 +41,11 @@ class Settings(BaseSettings):
     arena_model_spend_limit_usd: float = 50.0
     arena_kill_switch: bool = False
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "extra": "ignore",
+    }
 
 
 def get_settings() -> Settings:

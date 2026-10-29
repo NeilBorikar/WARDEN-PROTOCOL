@@ -30,6 +30,8 @@ class ResultsSummary(BaseModel):
 def get_results() -> ResultsSummary:
     """Retrieve benchmark results comparing Bouncer-protected vs naive agent."""
     results_path = Path(__file__).resolve().parents[2] / "results" / "results.json"
+    if not results_path.exists():
+        results_path = Path(__file__).resolve().parents[3] / "results" / "results.json"
     if results_path.exists():
         with open(results_path, encoding="utf-8") as f:
             data = json.load(f)

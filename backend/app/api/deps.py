@@ -38,11 +38,20 @@ class AppState:
     arena_sessions: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        # Select rail based on credentials availability
-        if self.settings.paypal_client_id and self.settings.paypal_client_secret:
-            self.rail = PayPalPayoutsRail(
+        # Select rail based on PRIMARY_RAIL and credentials availability
+        if (
+            self.settings.primary_rail == "payouts"
+            and self.settings.paypal_client_id
+            and self.settings.paypal_client_secret
+        ):
+            from app.payments.token import PayPalTokenManager
+            token_mgr = PayPalTokenManager(
                 client_id=self.settings.paypal_client_id,
                 client_secret=self.settings.paypal_client_secret,
+                base_url=self.settings.paypal_base_url,
+            )
+            self.rail = PayPalPayoutsRail(
+                token_manager=token_mgr,
                 base_url=self.settings.paypal_base_url,
             )
         else:

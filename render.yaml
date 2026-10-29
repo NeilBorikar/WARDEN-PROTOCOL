@@ -3,7 +3,7 @@ services:
     name: warden-protocol
     env: docker
     dockerfilePath: ./Dockerfile
-    plan: standard
+    plan: free
     healthCheckPath: /health
     envVars:
       - key: PORT

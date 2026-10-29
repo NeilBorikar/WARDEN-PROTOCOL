@@ -1,4 +1,4 @@
-# Warden Protocol - Benchmark Evaluation Results
+# Mandate Arena - Benchmark Evaluation Results
 
 > **Headline Security Guarantee** (Empirically Proven):
 > *Even when an AI agent is fully compromised by prompt injection or adversarial sellers,
@@ -6,9 +6,9 @@
 
 ## 1. Executive Summary: Naive vs Protected
 
-Comparison between standard unconstrained AI agent spend (Bouncer OFF) versus Warden Protocol Bouncer (Bouncer ON):
+Comparison between standard unconstrained AI agent spend (Bouncer OFF) versus Mandate Arena Bouncer (Bouncer ON):
 
-| Metric | Naive Agent (Bouncer OFF) | Warden Protocol (Bouncer ON) | Security Delta |
+| Metric | Naive Agent (Bouncer OFF) | Mandate Arena (Bouncer ON) | Security Delta |
 | :--- | :---: | :---: | :---: |
 | **Break-in Rate (Attacks Passed)** | **100.0%** (45/45) | **0.0%** (0/45) | **-100.0% (100% Defense)** |
 | **Total Money Stolen** | **$11,384.98** | **$0.00** | **-$11,384.98 Protected** |
@@ -16,8 +16,8 @@ Comparison between standard unconstrained AI agent spend (Bouncer OFF) versus Wa
 | **Attacks Escalated to Owner** | 0 / 45 | 0 / 45 | +0 escalated |
 | **False Alarm Rate (Legit Tasks)** | 0.0% | 0.0% | Honest usability profile |
 | **Owner Interruption Rate** | 0.0% (Unsafe) | 25.0% | Governed by approval threshold |
-| **p50 Added Bouncer Latency** | 0.0 ms | 0.42 ms | Sub-millisecond policy evaluation |
-| **p95 Added Bouncer Latency** | 0.0 ms | 0.63 ms | Negligible overhead |
+| **p50 Added Bouncer Latency** | 0.0 ms | 0.43 ms | Sub-millisecond policy evaluation |
+| **p95 Added Bouncer Latency** | 0.0 ms | 0.73 ms | Negligible overhead |
 
 ## 2. Attack Category Breakdown
 
@@ -47,14 +47,14 @@ Performance across all 9 evaluated attack categories (each with 5 distinct varia
 ## 4. Latency & Performance Profile
 
 - **Evaluation Engine**: Pure in-memory deterministic code (Principle P1). Zero LLM inference calls inside policy engine.
-- **Median Latency (p50):** `0.42 ms`
-- **95th Percentile Latency (p95):** `0.63 ms`
+- **Median Latency (p50):** `0.43 ms`
+- **95th Percentile Latency (p95):** `0.73 ms`
 - **Audit Log Hash Chain Overhead:** Negligible (< 0.1 ms per SHA-256 event chaining).
 
 ## 5. Benchmark Run Metadata
 
-- **Git Commit SHA:** `e80dc38`
-- **Evaluation Timestamp:** `2026-10-28 06:15:29 UTC`
+- **Git Commit SHA:** `c5beb68`
+- **Evaluation Timestamp:** `2026-10-29 16:38:17 UTC`
 - **RNG Seed:** `42`
 - **Models Tested in Modes:** OpenAI gpt-4o, Anthropic claude-3-5-sonnet, Google gemini-1.5-pro
 - **Total Sample Invocations:** 190

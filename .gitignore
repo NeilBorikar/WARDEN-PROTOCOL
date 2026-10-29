@@ -48,4 +48,5 @@ results/*
 
 # Secrets
 *.pem
+*.zip
 *.key
