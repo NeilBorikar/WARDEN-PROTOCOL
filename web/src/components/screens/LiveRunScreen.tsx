@@ -9,7 +9,11 @@ import {
   ShieldCheck,
   Send,
   Lock,
-  Sparkles,
+  Zap,
+  ShieldAlert,
+  Layers,
+  Terminal,
+  RefreshCw,
 } from 'lucide-react';
 import type { RunDetail } from '../../types/api';
 import { api, DEMO_RUNS } from '../../api/client';
@@ -23,24 +27,33 @@ export const LiveRunScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [activeStep, setActiveStep] = useState<number>(5);
 
-  const scenarioOptions = [
+  const scenarioCards = [
     {
       id: 'legit' as const,
-      title: 'Legitimate Procurement',
-      desc: 'Office gear order ($65.00) triggers owner approval ($50 threshold)',
+      title: 'Legitimate Procurement Order',
+      desc: 'Autonomous Buyer orders approved office gear ($65.00). Triggers owner review above $50 threshold.',
+      subtext: 'Fast Start • Standard Errand',
       expectedVerdict: 'ASK_OWNER',
+      iconClass: 'nixtio-icon-orange',
+      icon: Layers,
     },
     {
       id: 'injection' as const,
-      title: 'Prompt Injection Override',
-      desc: 'Adversarial seller injects $850 offshore override into transcript',
+      title: 'Prompt Injection Override Attack',
+      desc: 'Adversarial merchant attempts to hijack agent transcript and demand $850 offshore emergency fee.',
+      subtext: 'Security Evaluation • Exploit Neutralized',
       expectedVerdict: 'BLOCK',
+      iconClass: 'nixtio-icon-rose',
+      icon: Terminal,
     },
     {
       id: 'swap' as const,
-      title: 'Bank-Detail Swap (BEC)',
-      desc: 'Seller claims payment routing update to unlisted evil account',
+      title: 'Business Email Compromise (BEC)',
+      desc: 'Seller claims primary PayPal is down and redirects funds to unlisted evil offshore account.',
+      subtext: 'Allowlist Defense • Account Spoofing Blocked',
       expectedVerdict: 'BLOCK',
+      iconClass: 'nixtio-icon-teal',
+      icon: RefreshCw,
     },
   ];
 
@@ -54,7 +67,7 @@ export const LiveRunScreen: React.FC = () => {
         scripted: true,
       });
 
-      // Animate turns sequentially for realistic simulation
+      // Animate turns sequentially
       let step = 1;
       const interval = setInterval(() => {
         step += 1;
@@ -64,7 +77,7 @@ export const LiveRunScreen: React.FC = () => {
           setIsLoading(false);
           setCurrentRun(data);
         }
-      }, 500);
+      }, 400);
     } catch {
       setIsLoading(false);
       setCurrentRun(
@@ -83,245 +96,243 @@ export const LiveRunScreen: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top Banner & Scenario Selector */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
-              <h2 className="text-lg font-bold text-white tracking-tight">
-                Live Negotiation & Decision Timeline
-              </h2>
-            </div>
-            <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-              Watch the Buyer agent negotiate with the Seller. Money can only leave after the Bouncer verifies
-              the proposed deal against owner-signed Mandate & Intent constraints.
-            </p>
-          </div>
+      {/* 3 Nixtio Feature Cards (Matching the reference image!) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {scenarioCards.map((sc) => {
+          const isSelected = selectedScenario === sc.id;
+          const Icon = sc.icon;
 
-          <div className="flex items-center gap-2 w-full md:w-auto">
+          return (
             <button
-              onClick={() => handleRunScenario(selectedScenario)}
-              disabled={isLoading}
-              className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer w-full md:w-auto"
+              key={sc.id}
+              onClick={() => setSelectedScenario(sc.id)}
+              className={`nixtio-card text-left p-5 flex flex-col justify-between cursor-pointer relative overflow-hidden transition-all ${
+                isSelected
+                  ? 'ring-2 ring-slate-900 border-transparent shadow-lg'
+                  : 'hover:border-slate-300'
+              }`}
             >
-              {isLoading ? (
-                <>
-                  <RotateCcw size={14} className="animate-spin" />
-                  <span>Evaluating Bouncer Checks...</span>
-                </>
-              ) : (
-                <>
-                  <Play size={14} />
-                  <span>Re-run Scenario</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Scenario Tabs */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 pt-4 border-t border-slate-800">
-          {scenarioOptions.map((sc) => {
-            const isSelected = selectedScenario === sc.id;
-            return (
-              <button
-                key={sc.id}
-                onClick={() => setSelectedScenario(sc.id)}
-                className={`text-left p-3 rounded-lg border transition-all cursor-pointer ${
-                  isSelected
-                    ? 'bg-blue-600/10 border-blue-500/50 shadow-sm'
-                    : 'bg-slate-800/50 border-slate-700/60 hover:bg-slate-800 text-slate-300'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-xs font-semibold ${isSelected ? 'text-blue-400' : 'text-slate-200'}`}>
-                    {sc.title}
-                  </span>
+              <div>
+                {/* Icon Box */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${sc.iconClass} shadow-2xs`}>
+                    <Icon size={18} />
+                  </div>
                   <VerdictBadge verdict={sc.expectedVerdict} size="sm" />
                 </div>
-                <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">{sc.desc}</p>
-              </button>
-            );
-          })}
-        </div>
+
+                <h3 className="text-sm font-bold text-slate-900 leading-snug mb-1.5">
+                  {sc.title}
+                </h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                  {sc.desc}
+                </p>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-400">
+                <span>{sc.subtext}</span>
+                {isSelected && (
+                  <span className="w-2 h-2 rounded-full bg-slate-900 animate-pulse" />
+                )}
+              </div>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Main 2-Column Layout */}
+      {/* Main 2-Column AI Conversation & Verification Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
         {/* Left Column: Negotiation Transcript (7 cols) */}
-        <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm flex flex-col h-[680px]">
-          <div className="px-5 py-3.5 bg-slate-800/50 border-b border-slate-800 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Bot size={16} className="text-cyan-400" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                Agent Transcript (Buyer & Seller)
-              </h3>
+        <div className="lg:col-span-7 nixtio-card overflow-hidden flex flex-col h-[520px]">
+          {/* Header Bar */}
+          <div className="px-5 py-4 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                <Bot size={16} />
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                  Autonomous Multi-Agent Negotiation
+                </h3>
+                <span className="text-[10px] text-slate-400 font-medium">
+                  Buyer LLM Agent vs. External Seller Stream
+                </span>
+              </div>
             </div>
+
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono text-slate-400">
-                Run ID: <span className="text-slate-200">{currentRun.run_id}</span>
-              </span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-300 border border-slate-700">
-                Max 8 Turns
-              </span>
+              <button
+                onClick={() => handleRunScenario(selectedScenario)}
+                disabled={isLoading}
+                className="nixtio-pill-dark px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer"
+              >
+                {isLoading ? (
+                  <>
+                    <RotateCcw size={12} className="animate-spin" />
+                    <span>Verifying...</span>
+                  </>
+                ) : (
+                  <>
+                    <Play size={12} className="fill-current" />
+                    <span>Re-simulate</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
 
-          <div className="p-4 space-y-4 overflow-y-auto flex-1 font-sans text-sm">
+          {/* Transcript Message Stream */}
+          <div className="p-4 sm:p-5 space-y-3.5 overflow-y-auto flex-1 font-sans text-xs">
             {currentRun.turns.slice(0, activeStep).map((turn, idx) => {
               const isBuyer = turn.role === 'buyer';
               const isSeller = turn.role === 'seller';
-              const isVerifier = turn.role === 'verifier';
               const isBouncer = turn.role === 'bouncer';
 
               return (
                 <div
                   key={idx}
-                  className={`flex gap-3 p-3.5 rounded-lg border transition-all ${
+                  className={`p-4 rounded-2xl border transition-all ${
                     isSeller
-                      ? 'bg-rose-950/20 border-rose-900/30'
+                      ? 'bg-rose-50/50 border-rose-150'
                       : isBuyer
-                      ? 'bg-blue-950/20 border-blue-900/30'
-                      : isVerifier
-                      ? 'bg-amber-950/20 border-amber-900/30'
-                      : 'bg-emerald-950/20 border-emerald-900/30'
+                      ? 'bg-slate-50 border-slate-200/80'
+                      : 'bg-emerald-50/60 border-emerald-150'
                   }`}
                 >
-                  <div className="shrink-0 mt-0.5">
-                    {isSeller && (
-                      <div className="w-7 h-7 rounded-full bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400">
-                        <Store size={14} />
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${
+                        isSeller ? 'bg-rose-100 text-rose-600' : isBuyer ? 'bg-blue-100 text-blue-600' : 'bg-emerald-100 text-emerald-600'
+                      }`}>
+                        {isSeller ? <Store size={13} /> : isBuyer ? <Bot size={13} /> : <ShieldCheck size={13} />}
                       </div>
-                    )}
-                    {isBuyer && (
-                      <div className="w-7 h-7 rounded-full bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
-                        <Bot size={14} />
-                      </div>
-                    )}
-                    {isVerifier && (
-                      <div className="w-7 h-7 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
-                        <Sparkles size={14} />
-                      </div>
-                    )}
-                    {isBouncer && (
-                      <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-                        <ShieldCheck size={14} />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex-1 space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-200">
-                          {turn.role}
+                      <span className="font-bold text-[11px] uppercase tracking-wider text-slate-900">
+                        {turn.role}
+                      </span>
+                      {isSeller && (
+                        <span className="px-2 py-0.2 rounded-full text-[9px] font-mono font-bold bg-rose-100 text-rose-700">
+                          UNTRUSTED
                         </span>
-                        {isSeller && (
-                          <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                            UNTRUSTED_EXTERNAL
-                          </span>
-                        )}
-                        {isBuyer && (
-                          <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                            AUTONOMOUS_BUYER
-                          </span>
-                        )}
-                      </div>
-                      {turn.timestamp && (
-                        <span className="text-[10px] text-slate-400 font-mono">
-                          {new Date(turn.timestamp).toLocaleTimeString()}
+                      )}
+                      {isBuyer && (
+                        <span className="px-2 py-0.2 rounded-full text-[9px] font-mono font-bold bg-blue-100 text-blue-700">
+                          AUTONOMOUS_BUYER
+                        </span>
+                      )}
+                      {isBouncer && (
+                        <span className="px-2 py-0.2 rounded-full text-[9px] font-mono font-bold bg-emerald-100 text-emerald-700">
+                          DETERMINISTIC_BOUNCER
                         </span>
                       )}
                     </div>
 
-                    {/* Content */}
-                    <p className="text-xs text-slate-300 leading-relaxed break-words whitespace-pre-wrap">
-                      {turn.message}
-                    </p>
-
-                    {/* Tool Call Card */}
-                    {turn.tool_calls && turn.tool_calls.length > 0 && (
-                      <div className="mt-2 bg-slate-950/80 border border-slate-800 rounded p-2.5 font-mono text-xs">
-                        <div className="flex items-center gap-1.5 text-blue-400 mb-1.5">
-                          <Send size={12} />
-                          <span className="font-semibold">Tool Call: {turn.tool_calls[0].name}</span>
-                        </div>
-                        <div className="space-y-1 text-slate-400 text-[11px]">
-                          {Object.entries(turn.tool_calls[0].arguments).map(([key, val]) => (
-                            <div key={key} className="flex justify-between border-b border-slate-900 pb-0.5">
-                              <span className="text-slate-400">{key}:</span>
-                              <span className="text-slate-200 font-medium">
-                                {key.includes('minor') ? (
-                                  <MoneyDisplay amountMinor={val as number} />
-                                ) : (
-                                  String(val)
-                                )}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                    {turn.timestamp && (
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {new Date(turn.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                      </span>
                     )}
                   </div>
+
+                  <p className="text-slate-700 leading-relaxed break-words whitespace-pre-wrap">
+                    {turn.message}
+                  </p>
+
+                  {/* Tool Call Box */}
+                  {turn.tool_calls && turn.tool_calls.length > 0 && (
+                    <div className="mt-2.5 rounded-xl bg-slate-900 text-slate-100 p-3 font-mono text-[11px] shadow-xs">
+                      <div className="flex items-center justify-between text-blue-300 pb-1.5 border-b border-slate-800 mb-1.5 font-bold">
+                        <div className="flex items-center gap-1.5">
+                          <Send size={11} />
+                          <span>Tool Call: {turn.tool_calls[0].name}</span>
+                        </div>
+                        <span className="text-[9px] text-slate-400 uppercase">Parameters</span>
+                      </div>
+                      <div className="space-y-1 text-slate-300">
+                        {Object.entries(turn.tool_calls[0].arguments).map(([key, val]) => (
+                          <div key={key} className="flex justify-between items-center py-0.5">
+                            <span className="text-slate-400 font-mono">{key}:</span>
+                            <span className="text-white font-medium">
+                              {key.includes('minor') ? (
+                                <MoneyDisplay amountMinor={val as number} />
+                              ) : (
+                                String(val)
+                              )}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
 
-          <div className="px-4 py-2.5 bg-slate-950 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
-            <span className="flex items-center gap-1.5">
-              <Lock size={12} className="text-emerald-400" />
-              Principle P1: Deterministic Bouncer enforces checks. No LLM in payment path.
+          {/* Footer Bar */}
+          <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 text-[11px] text-slate-500 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 font-semibold text-slate-700">
+              <Lock size={12} className="text-emerald-500" />
+              Principle P1: Deterministic verification. Zero LLMs in payment path.
             </span>
-            <span className="font-mono text-slate-400">Status: {currentRun.status}</span>
+            <span className="font-mono text-slate-500 uppercase font-bold">
+              Run: {currentRun.run_id}
+            </span>
           </div>
         </div>
 
-        {/* Right Column: Bouncer Decision Timeline (5 cols) */}
+        {/* Right Column: Bouncer Decision Engine (5 cols) */}
         <div className="lg:col-span-5 space-y-4">
-          {/* Main Verdict Card */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          
+          {/* Main Verdict & Policy Assessment Card */}
+          <div className="nixtio-card p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <ShieldCheck size={18} className="text-blue-400" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  Bouncer Evaluation
-                </h3>
+                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center">
+                  <ShieldCheck size={16} />
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    Bouncer Evaluation
+                  </h3>
+                  <span className="text-[10px] text-slate-400">Ed25519 Policy Enforcement</span>
+                </div>
               </div>
               {currentRun.decision && (
                 <VerdictBadge verdict={currentRun.decision.verdict} size="lg" />
               )}
             </div>
 
-            {/* Proposed Payment Request Details */}
+            {/* Proposed Payment Request Details Card */}
             {currentRun.payment_request ? (
-              <div className="bg-slate-950/70 border border-slate-800/80 rounded-lg p-3 space-y-2.5">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-slate-400">Proposed Payee:</span>
-                  <span className="font-mono text-slate-200 font-semibold truncate max-w-[200px]" title={currentRun.payment_request.payee.email}>
+              <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 space-y-2.5 text-xs">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500 font-medium">Proposed Payee:</span>
+                  <span className="font-mono text-slate-900 font-bold truncate max-w-[200px]" title={currentRun.payment_request.payee.email}>
                     {currentRun.payment_request.payee.email}
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-slate-400">Proposed Amount:</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500 font-medium">Proposed Amount:</span>
                   <MoneyDisplay
                     amountMinor={currentRun.payment_request.amount_minor}
                     currency={currentRun.payment_request.currency}
-                    className="text-white font-bold"
+                    className="text-base text-slate-900 font-extrabold"
                     showCurrency
                   />
                 </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-slate-400">Erran Purpose:</span>
-                  <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-slate-800 text-slate-300">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500 font-medium">Errand Purpose:</span>
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-white text-slate-800 border border-slate-200">
                     {currentRun.payment_request.purpose}
                   </span>
                 </div>
 
-                {/* Provenance Tags */}
-                <div className="pt-2 border-t border-slate-900">
-                  <span className="text-[11px] text-slate-400 block mb-1.5">Field Provenance Tags:</span>
+                {/* Provenance Tags Section */}
+                <div className="pt-2 border-t border-slate-200">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
+                    Field Provenance Tags:
+                  </span>
                   <div className="flex flex-wrap gap-1.5">
                     {Object.entries(currentRun.payment_request.provenance).map(([f, tag]) => (
                       <ProvenanceChip key={f} field={f} tag={tag} />
@@ -330,7 +341,7 @@ export const LiveRunScreen: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="p-4 text-center text-xs text-slate-400 bg-slate-950/40 rounded-lg border border-dashed border-slate-800">
+              <div className="p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                 No payment request proposed yet.
               </div>
             )}
@@ -338,24 +349,24 @@ export const LiveRunScreen: React.FC = () => {
             {/* Decision Reasons List */}
             {currentRun.decision && (
               <div className="space-y-2">
-                <span className="text-xs font-semibold text-slate-300 block">
-                  Enforcement Reasons:
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+                  Enforcement Rationale:
                 </span>
                 <div className="space-y-2">
                   {currentRun.decision.reasons.map((r, i) => (
                     <div
                       key={i}
-                      className="p-2.5 rounded bg-slate-950 border border-slate-800 text-xs space-y-1"
+                      className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 text-xs space-y-1"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-[10px] text-blue-400 font-bold">
+                        <span className="font-mono text-[10px] text-blue-600 font-bold">
                           Check {r.check_id}
                         </span>
-                        <span className="font-mono text-[10px] text-slate-400">
+                        <span className="font-mono text-[9px] text-slate-400 font-semibold">
                           {r.code}
                         </span>
                       </div>
-                      <p className="text-slate-300 text-[11px] leading-relaxed">
+                      <p className="text-slate-700 text-[11px] leading-relaxed">
                         {r.message}
                       </p>
                     </div>
@@ -363,60 +374,62 @@ export const LiveRunScreen: React.FC = () => {
                 </div>
               </div>
             )}
-
-            {/* Cryptographic Hashes */}
-            {currentRun.decision && (
-              <div className="pt-2 border-t border-slate-800 space-y-1 font-mono text-[10px] text-slate-400">
-                <div className="flex justify-between truncate">
-                  <span>Mandate Hash:</span>
-                  <span className="text-slate-400">{currentRun.decision.mandate_hash.slice(0, 16)}...</span>
-                </div>
-                <div className="flex justify-between truncate">
-                  <span>Request Hash:</span>
-                  <span className="text-slate-400">{currentRun.decision.request_hash.slice(0, 16)}...</span>
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* Outcome & Rail Card */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          {/* Rail Execution Card */}
+          <div className="nixtio-card p-4 space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <Zap size={14} className="text-blue-500" />
               PayPal Rail Execution
             </h4>
+            
             {currentRun.payment_executed ? (
-              <div className="p-3 bg-emerald-950/30 border border-emerald-800/40 rounded-lg flex items-center gap-2.5 text-xs text-emerald-300">
-                <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+              <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 text-xs text-emerald-900">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                  <CheckCircle2 size={18} />
+                </div>
                 <div>
-                  <span className="font-semibold block">Payout Dispatched via PayPal Rail</span>
-                  <span className="font-mono text-[11px] text-emerald-400">
-                    ID: {currentRun.rail_payment_id || 'PAYPAL-MOCK-TX-4921'}
+                  <span className="font-bold block text-emerald-950">
+                    Payout Dispatched via PayPal Rail
+                  </span>
+                  <span className="font-mono text-[11px] text-emerald-700 font-semibold">
+                    Tx ID: {currentRun.rail_payment_id || 'PAYPAL-MOCK-TX-4921'}
                   </span>
                 </div>
               </div>
             ) : currentRun.decision?.verdict === 'ASK_OWNER' ? (
-              <div className="p-3 bg-amber-950/30 border border-amber-800/40 rounded-lg flex items-center gap-2.5 text-xs text-amber-300">
-                <AlertTriangle size={16} className="text-amber-400 shrink-0" />
+              <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl flex items-center gap-3 text-xs text-amber-900">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                  <AlertTriangle size={18} />
+                </div>
                 <div>
-                  <span className="font-semibold block">Awaiting Owner Approval</span>
-                  <span className="text-[11px] text-amber-400">
-                    Money will not move until owner signs single-use token in Approvals tab.
+                  <span className="font-bold block text-amber-950">
+                    Awaiting Owner Ed25519 Token
+                  </span>
+                  <span className="text-[11px] text-amber-700 leading-snug">
+                    Threshold exceeded ($50). Spend halted until owner authorizes in Approvals queue.
                   </span>
                 </div>
               </div>
             ) : (
-              <div className="p-3 bg-rose-950/30 border border-rose-800/40 rounded-lg flex items-center gap-2.5 text-xs text-rose-300">
-                <Lock size={16} className="text-rose-400 shrink-0" />
+              <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-900">
+                <div className="w-8 h-8 rounded-xl bg-rose-100 flex items-center justify-center text-rose-600 shrink-0">
+                  <ShieldAlert size={18} />
+                </div>
                 <div>
-                  <span className="font-semibold block">Money Retained Safely</span>
-                  <span className="text-[11px] text-rose-400">
+                  <span className="font-bold block text-rose-950">
+                    Funds Secured (Loss: $0.00)
+                  </span>
+                  <span className="text-[11px] text-rose-700 leading-snug">
                     Transaction rejected. Agent was blocked from accessing PayPal credentials.
                   </span>
                 </div>
               </div>
             )}
           </div>
+
         </div>
+
       </div>
     </div>
   );

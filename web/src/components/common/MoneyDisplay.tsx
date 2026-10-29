@@ -19,9 +19,14 @@ export const MoneyDisplay: React.FC<MoneyDisplayProps> = ({
   });
 
   return (
-    <span className={`font-mono font-semibold tabular-nums ${className}`}>
-      ${dollars}
-      {showCurrency && <span className="text-xs text-slate-400 font-normal ml-1">{currency}</span>}
+    <span className={`inline-flex items-baseline font-mono font-bold tabular-nums tracking-tight ${className}`}>
+      <span className="text-[0.85em] opacity-80 mr-0.5">$</span>
+      <span>{dollars}</span>
+      {showCurrency && (
+        <span className="text-[0.75em] text-slate-500 dark:text-slate-400 font-sans font-medium ml-1.5 uppercase px-1 py-0.2 rounded bg-slate-200/50 dark:bg-slate-800 border border-slate-300/40 dark:border-white/10">
+          {currency}
+        </span>
+      )}
     </span>
   );
 };

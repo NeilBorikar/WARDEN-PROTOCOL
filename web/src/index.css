@@ -2,12 +2,32 @@
 
 @layer base {
   :root {
-    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
     
-    /* Security Console Palette: Deep Slate / Indigo Cyber Accent */
-    --accent: #2563eb;
-    --accent-hover: #1d4ed8;
+    /* Nixtio AI Assistant Exact Color Palette */
+    --bg-page: #E8EEFB;
+    --bg-page-gradient: linear-gradient(135deg, #E6EDFB 0%, #EDF3FD 40%, #E2EAF8 70%, #DAE4F6 100%);
+    --bg-window: rgba(255, 255, 255, 0.94);
+    --border-window: rgba(255, 255, 255, 0.85);
+    
+    --card-bg: #FFFFFF;
+    --card-border: #F1F4F9;
+    --card-shadow: 0 12px 35px -8px rgba(79, 98, 150, 0.09), 0 4px 12px -2px rgba(79, 98, 150, 0.04);
+    
+    --text-heading: #0F172A;
+    --text-body: #334155;
+    --text-muted: #64748B;
+    --text-subtle: #94A3B8;
+    
+    --pill-dark: #0F172A;
+    --pill-dark-hover: #000000;
+    
+    --accent-blue: #3B82F6;
+    --accent-indigo: #6366F1;
+    --accent-emerald: #10B981;
+    --accent-amber: #F59E0B;
+    --accent-rose: #F43F5E;
   }
 
   body {
@@ -15,13 +35,75 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background: var(--bg-page);
+    background-image: 
+      radial-gradient(circle at 12% 18%, rgba(200, 218, 255, 0.7) 0%, transparent 45%),
+      radial-gradient(circle at 88% 22%, rgba(215, 210, 255, 0.6) 0%, transparent 45%),
+      radial-gradient(circle at 50% 85%, rgba(210, 235, 255, 0.5) 0%, transparent 50%),
+      var(--bg-page-gradient);
+    background-attachment: fixed;
+    color: var(--text-body);
+    min-height: 100vh;
   }
 }
 
-/* Custom scrollbars for security console logs */
+/* Wavy abstract ambient lines like in Nixtio shot */
+.nixtio-curves {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(ellipse 90% 60% at 90% 40%, rgba(165, 180, 252, 0.18), transparent),
+    radial-gradient(ellipse 80% 50% at 10% 70%, rgba(147, 197, 253, 0.2), transparent);
+  z-index: 0;
+}
+
+/* App Window Container */
+.nixtio-window {
+  background: var(--bg-window);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 30px 100px -20px rgba(50, 70, 130, 0.22),
+    0 10px 30px -5px rgba(50, 70, 130, 0.08),
+    inset 0 1px 2px rgba(255, 255, 255, 0.9);
+}
+
+/* Nixtio Feature Cards */
+.nixtio-card {
+  background: #FFFFFF;
+  border: 1px solid #F1F4F9;
+  border-radius: 24px;
+  box-shadow: var(--card-shadow);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nixtio-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 45px -10px rgba(79, 98, 150, 0.16), 0 8px 16px -4px rgba(79, 98, 150, 0.06);
+  border-color: #E2E8F0;
+}
+
+/* Dark Pill Buttons */
+.nixtio-pill-dark {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.25);
+}
+
+.nixtio-pill-dark:hover {
+  background: #000000;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -2px rgba(15, 23, 42, 0.35);
+}
+
+/* Subtle Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -29,10 +111,20 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.4);
+  background: rgba(148, 163, 184, 0.35);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(156, 163, 175, 0.7);
+  background: rgba(148, 163, 184, 0.6);
+}
+
+/* Floating mascot subtle bob animation */
+@keyframes mascot-bob {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-mascot {
+  animation: mascot-bob 3.5s ease-in-out infinite;
 }

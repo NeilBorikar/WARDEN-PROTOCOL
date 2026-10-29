@@ -5,7 +5,8 @@ import {
   Plus,
   CheckCircle2,
   UserCheck,
-  Sparkles,
+  Lock,
+  FileSignature,
 } from 'lucide-react';
 import type { Mandate, Intent } from '../../types/api';
 import { api, DEMO_MANDATE, DEMO_INTENT } from '../../api/client';
@@ -51,7 +52,6 @@ export const MandateScreen: React.FC = () => {
       setIntentSuccessNotice(`Created and signed Intent "${created.intent_id}" with owner Ed25519 key.`);
       setActiveTab('intent');
     } catch {
-      // Offline fallback
       const mockCreated: Intent = {
         intent_id: `intent-${Date.now().toString(36)}`,
         mandate_id: selectedMandate.mandate_id,
@@ -71,361 +71,348 @@ export const MandateScreen: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Banner */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <KeyRound size={20} className="text-blue-400" />
-              <h2 className="text-lg font-bold text-white tracking-tight">
-                Mandates & Errand Intents (Ed25519 Signed)
-              </h2>
-            </div>
-            <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-              Principle P1 & P3: Money-critical fields (caps, allowlisted payees, intent budgets) originate
-              exclusively from owner-signed documents. Untrusted chat cannot override them.
-            </p>
-          </div>
+      {/* Tab Selectors & Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <KeyRound size={20} className="text-slate-800" />
+            Mandates & Errand Intents (Ed25519 Signed)
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Owner authorization parameters that strictly govern agent transactions.
+          </p>
+        </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setActiveTab('mandate')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                activeTab === 'mandate'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-800 text-slate-400 hover:text-white'
-              }`}
-            >
-              Standing Mandate
-            </button>
-            <button
-              onClick={() => setActiveTab('intent')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                activeTab === 'intent'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-800 text-slate-400 hover:text-white'
-              }`}
-            >
-              Errand Intents ({intents.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('create-intent')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                activeTab === 'create-intent'
-                  ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30'
-              }`}
-            >
-              <Plus size={13} />
-              <span>Sign New Intent</span>
-            </button>
-          </div>
+        {/* Tab Pill Selectors */}
+        <div className="inline-flex items-center gap-1.5 p-1 rounded-full bg-slate-100 border border-slate-200/80">
+          <button
+            onClick={() => setActiveTab('mandate')}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'mandate'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            Standing Mandate
+          </button>
+          <button
+            onClick={() => setActiveTab('intent')}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'intent'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            Active Intents ({intents.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('create-intent')}
+            className={`nixtio-pill-dark px-4 py-1.5 text-xs font-semibold flex items-center gap-1 cursor-pointer`}
+          >
+            <Plus size={13} />
+            <span>Issue Intent</span>
+          </button>
         </div>
       </div>
 
-      {/* Success notification */}
       {intentSuccessNotice && (
-        <div className="p-3 bg-emerald-950/40 border border-emerald-800/60 rounded-xl flex items-center justify-between text-xs text-emerald-300">
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
-            <CheckCircle2 size={16} className="text-emerald-400" />
-            <span>{intentSuccessNotice}</span>
+            <CheckCircle2 size={16} className="text-emerald-600" />
+            <span className="font-semibold">{intentSuccessNotice}</span>
           </div>
-          <button onClick={() => setIntentSuccessNotice(null)} className="text-slate-400 hover:text-white">
-            ×
+          <button
+            onClick={() => setIntentSuccessNotice(null)}
+            className="opacity-70 hover:opacity-100 font-bold cursor-pointer"
+          >
+            Dismiss
           </button>
         </div>
       )}
 
-      {/* TAB 1: Mandate View */}
+      {/* Tab 1: Standing Mandate View */}
       {activeTab === 'mandate' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Mandate Policy Breakdown (8 cols) */}
-          <div className="lg:col-span-8 space-y-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-5">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck size={18} className="text-emerald-400" />
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                    Mandate Policy Rules ({selectedMandate.mandate_id})
+          {/* Titanium Smart-Card (7 cols) */}
+          <div className="lg:col-span-7 space-y-5">
+            <div className="relative rounded-3xl p-6 sm:p-7 border border-slate-900 bg-slate-900 text-white shadow-xl">
+              <div className="flex items-start justify-between mb-5">
+                <div>
+                  <span className="text-[10px] font-mono tracking-widest uppercase text-blue-400 font-bold">
+                    ED25519 DELEGATED SPENDING MANDATE
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white mt-1">
+                    {selectedMandate.mandate_id}
                   </h3>
                 </div>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                  <CheckCircle2 size={12} />
-                  Ed25519 Validated
+                <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-white">
+                  <ShieldCheck size={20} />
+                </div>
+              </div>
+
+              {/* Cap Metrics */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 py-4 my-2 border-y border-white/10 font-mono">
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Single Tx Cap</span>
+                  <MoneyDisplay amountMinor={selectedMandate.per_payment_cap_minor} className="text-xl sm:text-2xl text-white font-extrabold" />
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Daily Limit</span>
+                  <MoneyDisplay amountMinor={selectedMandate.daily_cap_minor} className="text-xl sm:text-2xl text-white font-extrabold" />
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Escalation Trigger</span>
+                  <MoneyDisplay amountMinor={selectedMandate.approval_threshold_minor} className="text-xl sm:text-2xl text-amber-400 font-extrabold" />
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-4 mt-5 text-xs text-slate-300 font-mono">
+                <div>
+                  <span className="text-[10px] text-slate-400 block uppercase">Owner Principal</span>
+                  <span className="font-bold text-white">{selectedMandate.owner_id}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block uppercase">Authorized Agent</span>
+                  <span className="font-bold text-blue-400">{selectedMandate.agent_id}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block uppercase">Key Fingerprint</span>
+                  <span className="font-bold text-slate-300">{selectedMandate.key_id}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Allowed Payees allowlist card */}
+            <div className="nixtio-card p-5 space-y-3.5">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                  <UserCheck size={16} className="text-emerald-600" />
+                  Allowlisted Payees ({selectedMandate.allowed_payees.length})
+                </h4>
+                <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-bold">
+                  Bouncer Verified
                 </span>
               </div>
 
-              {/* Cap Metrics Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg">
-                  <span className="text-[10px] font-mono text-slate-400 uppercase block">Daily Cap</span>
-                  <div className="text-base font-bold text-white mt-1">
-                    <MoneyDisplay amountMinor={selectedMandate.daily_cap_minor} currency={selectedMandate.currency} />
-                  </div>
-                  <span className="text-[10px] text-slate-400">Hard stop across 24h</span>
-                </div>
-
-                <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg">
-                  <span className="text-[10px] font-mono text-slate-400 uppercase block">Per-Payment Cap</span>
-                  <div className="text-base font-bold text-white mt-1">
-                    <MoneyDisplay amountMinor={selectedMandate.per_payment_cap_minor} currency={selectedMandate.currency} />
-                  </div>
-                  <span className="text-[10px] text-slate-400">Max per single request</span>
-                </div>
-
-                <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg">
-                  <span className="text-[10px] font-mono text-slate-400 uppercase block">Approval Threshold</span>
-                  <div className="text-base font-bold text-amber-400 mt-1">
-                    <MoneyDisplay amountMinor={selectedMandate.approval_threshold_minor} currency={selectedMandate.currency} />
-                  </div>
-                  <span className="text-[10px] text-slate-400">Above this triggers owner</span>
-                </div>
-
-                <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg">
-                  <span className="text-[10px] font-mono text-slate-400 uppercase block">Hourly Velocity</span>
-                  <div className="text-base font-bold text-white mt-1 font-mono">
-                    {selectedMandate.max_payments_per_hour}/hr
-                  </div>
-                  <span className="text-[10px] text-slate-400">Rate limit limit</span>
-                </div>
-              </div>
-
-              {/* Allowlisted Payees Table */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <UserCheck size={14} className="text-blue-400" />
-                  Allowlisted Payees ({selectedMandate.allowed_payees.length})
-                </h4>
-                <div className="border border-slate-800 rounded-lg overflow-hidden bg-slate-950">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-800/40 text-slate-400 font-mono border-b border-slate-800">
-                      <tr>
-                        <th className="py-2 px-3">Payee ID</th>
-                        <th className="py-2 px-3">Display Name</th>
-                        <th className="py-2 px-3">PayPal Email</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/50">
-                      {selectedMandate.allowed_payees.map((p) => (
-                        <tr key={p.payee_id} className="hover:bg-slate-800/20">
-                          <td className="py-2.5 px-3 font-mono text-blue-400 font-semibold">{p.payee_id}</td>
-                          <td className="py-2.5 px-3 text-slate-200">{p.display_name}</td>
-                          <td className="py-2.5 px-3 font-mono text-emerald-400">{p.paypal_email}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                {selectedMandate.allowed_payees.map((payee) => (
+                  <div
+                    key={payee.payee_id}
+                    className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between"
+                  >
+                    <div>
+                      <span className="text-xs font-bold text-slate-900 block">
+                        {payee.display_name}
+                      </span>
+                      <span className="text-[11px] font-mono text-blue-600 font-semibold">
+                        {payee.paypal_email}
+                      </span>
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white text-emerald-700 border border-slate-200">
+                      ALLOWLISTED
+                    </span>
+                  </div>
+                ))}
               </div>
+            </div>
+          </div>
 
-              {/* Purpose & Red Tier Policies */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg space-y-1.5 text-xs">
-                  <span className="text-slate-400 font-semibold block">Allowed Purposes:</span>
+          {/* Right Column: Policies (5 cols) */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="nixtio-card p-5 space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                <Lock size={16} className="text-slate-800" />
+                Security Policies Enforced
+              </h4>
+
+              <div className="space-y-3 text-xs">
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                  <span className="text-slate-400 text-[11px] block uppercase font-bold">Unlisted Payee Policy</span>
+                  <span className="font-mono font-bold text-amber-600 text-sm mt-0.5 block">
+                    {selectedMandate.new_payee_policy}
+                  </span>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Any new payee not in the allowlist must be manually signed off by owner.
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                  <span className="text-slate-400 text-[11px] block uppercase font-bold">Red Tier Risk Policy</span>
+                  <span className="font-mono font-bold text-rose-600 text-sm mt-0.5 block">
+                    {selectedMandate.red_tier_policy}
+                  </span>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    High risk signals immediately trigger an unbypassable hard block.
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                  <span className="text-slate-400 text-[11px] block uppercase font-bold mb-1.5">Allowed Spending Purposes</span>
                   <div className="flex flex-wrap gap-1.5">
-                    {selectedMandate.allowed_purposes.map((purp) => (
-                      <span key={purp} className="px-2 py-0.5 rounded text-[11px] font-mono bg-blue-500/10 text-blue-300 border border-blue-500/30">
-                        {purp}
+                    {selectedMandate.allowed_purposes.map((p) => (
+                      <span key={p} className="px-2.5 py-0.5 rounded-full font-mono text-[10px] bg-white text-slate-800 border border-slate-200 font-semibold">
+                        {p}
                       </span>
                     ))}
                   </div>
                 </div>
-
-                <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg space-y-1.5 text-xs font-mono">
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">New Payee Policy:</span>
-                    <span className="text-amber-400 font-bold">{selectedMandate.new_payee_policy}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Red Tier Tool Policy:</span>
-                    <span className="text-rose-400 font-bold">{selectedMandate.red_tier_policy}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Cryptographic Verification Card (4 cols) */}
-          <div className="lg:col-span-4 space-y-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-4">
-              <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-                <KeyRound size={18} className="text-purple-400" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  Cryptographic Provenance
-                </h3>
-              </div>
-
-              <div className="space-y-3 text-xs font-mono">
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Owner ID:</span>
-                  <span className="text-white font-semibold">{selectedMandate.owner_id}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Bound Agent ID:</span>
-                  <span className="text-cyan-400">{selectedMandate.agent_id}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Key ID:</span>
-                  <span className="text-slate-300">{selectedMandate.key_id}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Issued / Expiry:</span>
-                  <span className="text-slate-300 text-[10px]">
-                    {new Date(selectedMandate.issued_at).toLocaleDateString()} →{' '}
-                    {new Date(selectedMandate.expires_at).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="pt-2 border-t border-slate-800">
-                  <span className="text-slate-400 block text-[11px] mb-1">Ed25519 Signature:</span>
-                  <div className="p-2 bg-slate-950 border border-slate-800 rounded text-[10px] text-slate-400 break-all leading-tight">
-                    {selectedMandate.signature}
-                  </div>
-                </div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* TAB 2: Intent List */}
+      {/* Tab 2: Active Intents View */}
       {activeTab === 'intent' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {intents.map((intent) => (
-              <div
-                key={intent.intent_id}
-                className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-3"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/30">
-                      Bound to: {intent.mandate_id}
-                    </span>
-                    <h4 className="text-sm font-bold text-white mt-1.5">{intent.description}</h4>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs font-mono text-slate-400 block">Budget Cap:</span>
-                    <MoneyDisplay amountMinor={intent.max_total_minor} className="text-white font-bold" />
-                  </div>
-                </div>
-
-                <div className="bg-slate-950 border border-slate-800 rounded-lg p-3 space-y-1.5 text-xs">
-                  <span className="text-slate-400 font-semibold block text-[11px]">Approved Items:</span>
-                  {intent.items.map((item, idx) => (
-                    <div key={idx} className="flex justify-between font-mono">
-                      <span className="text-slate-200">
-                        {item.qty}x {item.sku}
-                      </span>
-                      <span className="text-slate-400">
-                        Max Unit: <MoneyDisplay amountMinor={item.max_unit_price_minor} />
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                  <span>Deadline: {new Date(intent.deadline).toLocaleDateString()}</span>
-                  <span className="text-emerald-400 flex items-center gap-1">
-                    <CheckCircle2 size={12} /> Signed by Owner
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {intents.map((it) => (
+            <div
+              key={it.intent_id}
+              className="nixtio-card p-5 space-y-3.5"
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <span className="text-[10px] font-mono text-blue-600 font-bold uppercase">
+                    Errand Intent
                   </span>
+                  <h4 className="text-sm font-bold text-slate-900 mt-0.5">
+                    {it.intent_id}
+                  </h4>
                 </div>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  SIGNED BY OWNER
+                </span>
               </div>
-            ))}
-          </div>
+
+              <p className="text-xs text-slate-600 leading-relaxed">
+                {it.description}
+              </p>
+
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex justify-between items-center text-xs">
+                <span className="text-slate-500">Max Budget Cap:</span>
+                <MoneyDisplay amountMinor={it.max_total_minor} className="text-sm font-black text-slate-900" />
+              </div>
+
+              <div className="space-y-1 text-xs">
+                <span className="text-[10px] font-bold uppercase text-slate-400 block mb-1">
+                  Permitted Line Items:
+                </span>
+                {it.items.map((item, idx) => (
+                  <div key={idx} className="flex justify-between font-mono py-1 border-b border-slate-100">
+                    <span className="text-slate-800 font-semibold">{item.sku} (x{item.qty})</span>
+                    <span className="text-slate-500">
+                      Cap: <MoneyDisplay amountMinor={item.max_unit_price_minor} />/unit
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* TAB 3: Create & Sign New Intent */}
+      {/* Tab 3: Create Intent Form */}
       {activeTab === 'create-intent' && (
-        <div className="max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm space-y-5">
-          <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-            <Sparkles size={18} className="text-emerald-400" />
-            <h3 className="text-sm font-bold text-white">Create & Sign Autonomous Errand Intent</h3>
+        <div className="max-w-xl mx-auto nixtio-card p-6 sm:p-7 space-y-4">
+          <div className="flex items-center gap-3 pb-3 border-b border-slate-150">
+            <div className="w-10 h-10 rounded-2xl nixtio-icon-blue flex items-center justify-center">
+              <FileSignature size={18} />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-slate-900">
+                Issue Signed Errand Intent
+              </h3>
+              <p className="text-xs text-slate-400">
+                Authorizes the agent to spend up to the budget cap for exact items.
+              </p>
+            </div>
           </div>
 
-          <form onSubmit={handleCreateIntent} className="space-y-4 text-xs">
-            <div className="space-y-1">
-              <label className="font-semibold text-slate-300">Errand Description:</label>
+          <form onSubmit={handleCreateIntent} className="space-y-4 text-xs font-sans">
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1.5">
+                Errand Description
+              </label>
               <input
                 type="text"
                 required
                 value={newIntentDesc}
                 onChange={(e) => setNewIntentDesc(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-2.5 rounded-full border border-slate-200 bg-slate-50 text-slate-900 text-xs focus:ring-2 focus:ring-slate-900"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-300">Item SKU:</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1.5">
+                  Total Budget Cap ($)
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  required
+                  value={newIntentCap / 100}
+                  onChange={(e) => setNewIntentCap(Math.round(parseFloat(e.target.value || '0') * 100))}
+                  className="w-full px-4 py-2.5 rounded-full border border-slate-200 bg-slate-50 text-slate-900 text-xs font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1.5">
+                  Item SKU
+                </label>
                 <input
                   type="text"
                   required
                   value={newIntentSku}
                   onChange={(e) => setNewIntentSku(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 font-mono text-slate-200"
+                  className="w-full px-4 py-2.5 rounded-full border border-slate-200 bg-slate-50 text-slate-900 text-xs font-mono"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-300">Quantity:</label>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1.5">
+                  Quantity
+                </label>
                 <input
                   type="number"
                   min="1"
                   required
                   value={newIntentQty}
-                  onChange={(e) => setNewIntentQty(parseInt(e.target.value) || 1)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 font-mono text-slate-200"
+                  onChange={(e) => setNewIntentQty(parseInt(e.target.value || '1', 10))}
+                  className="w-full px-4 py-2.5 rounded-full border border-slate-200 bg-slate-50 text-slate-900 text-xs font-mono"
                 />
               </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-300">Max Unit Price (Cents):</label>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1.5">
+                  Max Unit Price ($)
+                </label>
                 <input
                   type="number"
                   min="1"
                   required
-                  value={newIntentUnitPrice}
-                  onChange={(e) => setNewIntentUnitPrice(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 font-mono text-slate-200"
+                  value={newIntentUnitPrice / 100}
+                  onChange={(e) => setNewIntentUnitPrice(Math.round(parseFloat(e.target.value || '0') * 100))}
+                  className="w-full px-4 py-2.5 rounded-full border border-slate-200 bg-slate-50 text-slate-900 text-xs font-mono"
                 />
-                <span className="text-[10px] text-slate-400">
-                  = ${(newIntentUnitPrice / 100).toFixed(2)}
-                </span>
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-300">Total Errand Cap (Cents):</label>
-                <input
-                  type="number"
-                  min="1"
-                  required
-                  value={newIntentCap}
-                  onChange={(e) => setNewIntentCap(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 font-mono text-slate-200"
-                />
-                <span className="text-[10px] text-slate-400">
-                  = ${(newIntentCap / 100).toFixed(2)}
-                </span>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-800 flex justify-end gap-2">
+            <div className="pt-3 border-t border-slate-150 flex items-center justify-end gap-3">
               <button
                 type="button"
-                onClick={() => setActiveTab('intent')}
-                className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium cursor-pointer"
+                onClick={() => setActiveTab('mandate')}
+                className="px-4 py-2 rounded-full text-xs font-semibold text-slate-500 hover:bg-slate-100 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-sm cursor-pointer"
+                className="nixtio-pill-dark px-5 py-2.5 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
               >
-                <KeyRound size={14} />
-                <span>Sign Intent with Ed25519</span>
+                <KeyRound size={13} />
+                <span>Sign & Issue Intent</span>
               </button>
             </div>
           </form>
