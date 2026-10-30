@@ -27,6 +27,7 @@ import {
   Zap,
   RotateCcw,
   Search,
+  Lock,
 } from 'lucide-react';
 import './App.css';
 
@@ -48,7 +49,7 @@ export function App() {
 
   const windowRef = useRef<HTMLDivElement>(null);
   const mainLandmarkRef = useRef<HTMLElement>(null);
-  const mascotRef = useRef<HTMLDivElement>(null);
+  const telemetryRef = useRef<HTMLDivElement>(null);
 
   // Sync pending approvals count & mark dataReady for splash synchronizer
   const refreshPendingCount = async () => {
@@ -68,12 +69,12 @@ export function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Mascot Floating Idle Animation
+  // Subtle telemetry pulse
   useEffect(() => {
-    if (!mascotRef.current) return;
-    const tween = gsap.to(mascotRef.current, {
-      y: -8,
-      duration: 2.2,
+    if (!telemetryRef.current) return;
+    const tween = gsap.to(telemetryRef.current, {
+      y: -3,
+      duration: 2.8,
       repeat: -1,
       yoyo: true,
       ease: 'sine.inOut',
@@ -91,15 +92,15 @@ export function App() {
       const yRatio = (e.clientY - innerHeight / 2) / innerHeight;
 
       gsap.to('.nixtio-curves', {
-        x: xRatio * 22,
-        y: yRatio * 22,
+        x: xRatio * 20,
+        y: yRatio * 20,
         duration: 1.2,
         ease: 'power2.out',
       });
 
       gsap.to('.nixtio-bg-svg', {
-        x: xRatio * -28,
-        y: yRatio * -28,
+        x: xRatio * -24,
+        y: yRatio * -24,
         duration: 1.5,
         ease: 'power2.out',
       });
@@ -132,7 +133,7 @@ export function App() {
     setShowSplash(false);
     sounds.playBouncerOnline();
 
-    // Ensure the viewport is pinned to the very top
+    // Ensure the viewport is pinned strictly to top
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
@@ -150,7 +151,6 @@ export function App() {
           duration: 0.8,
           ease: 'power2.out',
           onComplete: () => {
-            // Move focus to main landmark for accessibility WITHOUT scrolling the window
             mainLandmarkRef.current?.focus({ preventScroll: true });
             window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
           },
@@ -194,26 +194,6 @@ export function App() {
       );
     }
   }, [currentScreen, showSplash]);
-
-  const handleMascotHover = () => {
-    if (!mascotRef.current) return;
-    gsap.to(mascotRef.current, {
-      scale: 1.08,
-      rotation: 4,
-      duration: 0.25,
-      ease: 'back.out(2)',
-    });
-  };
-
-  const handleMascotLeave = () => {
-    if (!mascotRef.current) return;
-    gsap.to(mascotRef.current, {
-      scale: 1,
-      rotation: 0,
-      duration: 0.35,
-      ease: 'power2.out',
-    });
-  };
 
   const navItems: Array<{
     id: ScreenId;
@@ -270,7 +250,7 @@ export function App() {
         onToggleBouncerView={() => setCurrentScreen('results')}
       />
 
-      {/* Abstract curvy lines in the background matching Nixtio shot */}
+      {/* Abstract curvy lines in the background matching palette */}
       <div className="nixtio-curves" />
 
       {/* Background SVG decorative curves with parallax class */}
@@ -283,7 +263,7 @@ export function App() {
         <path d="M-50,600 C500,500 800,900 1400,600 C1700,450 2000,800 2300,700" fill="none" stroke="rgba(199,210,254,0.25)" strokeWidth="1.5" />
       </svg>
 
-      {/* Main Dashboard Window: Starts directly at the top with my-0 */}
+      {/* Main Dashboard Window */}
       <div
         ref={windowRef}
         style={{
@@ -345,7 +325,7 @@ export function App() {
         <div className="flex-1 flex flex-col p-4 sm:p-7 lg:p-9 min-w-0">
           
           {/* Top Header Row */}
-          <header className="flex items-center justify-between pb-6 border-b border-slate-150/80 mb-6">
+          <header className="flex items-center justify-between pb-5 border-b border-slate-150/80 mb-5">
             {/* Left: Pill Dropdown Badge */}
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100/80 border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-2xs">
               <Sparkles size={14} className="text-slate-900" />
@@ -358,7 +338,7 @@ export function App() {
               className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/90 text-xs font-medium text-slate-500 hover:text-slate-800 hover:border-slate-300 transition-all cursor-pointer shadow-2xs"
             >
               <Search size={13} className="text-slate-400" />
-              <span>Quick Command Search</span>
+              <span>Command Search</span>
               <kbd className="font-mono text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
                 ⌘K
               </kbd>
@@ -384,55 +364,44 @@ export function App() {
             </div>
           </header>
 
-          {/* Hero Greeting & Cute AI Robot Mascot */}
-          <div className="relative mb-7">
+          {/* Executive Security Attestation Banner (Clean, authoritative, zero cartoon emojis) */}
+          <div className="relative mb-6">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
               <div className="max-w-xl">
-                <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">
-                  Hi Alice, Ready to Secure Autonomous Errand Payments?
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                    Ed25519 Cryptographic Boundary • Active
+                  </span>
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
+                  Autonomous Spending Security Rail
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-500 mt-2 font-medium">
-                  Deterministic Ed25519 spending mandates enforce strict budget caps. Untrusted chat cannot steal funds.
+                <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium leading-relaxed">
+                  Deterministic policy boundary enforcing owner-signed budget caps. Untrusted agent chat cannot exfiltrate PayPal credentials or exceed authorized limits.
                 </p>
               </div>
 
-              {/* Cute 3D AI Robot Mascot & Speech Bubble */}
+              {/* Hardware / Cryptographic Policy Telemetry Badge */}
               <div
-                ref={mascotRef}
-                onMouseEnter={handleMascotHover}
-                onMouseLeave={handleMascotLeave}
-                className="relative flex items-center self-end lg:self-center shrink-0 pr-4 cursor-pointer"
+                ref={telemetryRef}
+                className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs shrink-0 select-none"
               >
-                {/* Speech Bubble */}
-                <div className="absolute -top-6 -left-28 bg-white border border-slate-200 shadow-md rounded-2xl px-3 py-1.5 text-[11px] font-semibold text-slate-800 whitespace-nowrap">
-                  Hey Alice! 👋 Need a safety check?
-                  <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-white border-r border-b border-slate-200 rotate-45" />
+                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
+                  <Lock size={17} className="stroke-[2.2]" />
                 </div>
-
-                {/* 3D Robot Vector Illustration */}
-                <svg width="76" height="76" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-lg">
-                  <ellipse cx="50" cy="94" rx="28" ry="4" fill="rgba(100,116,139,0.18)" />
-                  <rect x="28" y="52" width="44" height="34" rx="17" fill="url(#bot_body)" />
-                  <rect x="34" y="58" width="32" height="22" rx="11" fill="#FFFFFF" />
-                  <circle cx="50" cy="69" r="5" fill="#3B82F6" />
-                  <rect x="44" y="46" width="12" height="8" rx="4" fill="#94A3B8" />
-                  <rect x="20" y="16" width="60" height="34" rx="17" fill="url(#bot_head)" stroke="#E2E8F0" strokeWidth="1.5" />
-                  <rect x="26" y="21" width="48" height="24" rx="12" fill="#0F172A" />
-                  <ellipse cx="40" cy="33" rx="5" ry="4" fill="#38BDF8" />
-                  <ellipse cx="60" cy="33" rx="5" ry="4" fill="#38BDF8" />
-                  <rect x="48" y="8" width="4" height="9" rx="2" fill="#94A3B8" />
-                  <circle cx="50" cy="7" r="4" fill="#3B82F6" />
-                  <defs>
-                    <linearGradient id="bot_head" x1="20" y1="16" x2="80" y2="50" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#FFFFFF" />
-                      <stop offset="1" stopColor="#E2E8F0" />
-                    </linearGradient>
-                    <linearGradient id="bot_body" x1="28" y1="52" x2="72" y2="86" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#F8FAFC" />
-                      <stop offset="1" stopColor="#CBD5E1" />
-                    </linearGradient>
-                  </defs>
-                </svg>
+                <div className="text-left font-mono">
+                  <div className="text-[10px] uppercase text-slate-400 font-bold tracking-wider">
+                    Root of Trust
+                  </div>
+                  <div className="text-xs font-extrabold text-slate-900">
+                    key-owner-ed25519-1
+                  </div>
+                  <div className="text-[10px] text-slate-500 flex items-center gap-1.5 mt-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                    <span>Velocity: 0/5 tx/hr</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -508,7 +477,7 @@ export function App() {
                 className="nixtio-pill-dark px-3.5 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer"
               >
                 <Zap size={12} />
-                <span>Simulate Errand</span>
+                <span>Execute Scenario</span>
               </button>
 
               <button
@@ -516,7 +485,7 @@ export function App() {
                 className="nixtio-pill-dark px-3.5 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer"
               >
                 <CheckCircle size={12} />
-                <span>Review Approvals ({pendingCount})</span>
+                <span>Pending Approvals ({pendingCount})</span>
               </button>
 
               <button
@@ -524,7 +493,7 @@ export function App() {
                 className="nixtio-pill-dark px-3.5 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer"
               >
                 <History size={12} />
-                <span>Verify Chain</span>
+                <span>Verify Preimages</span>
               </button>
 
               <button
@@ -539,7 +508,7 @@ export function App() {
                 onClick={() => setCurrentScreen('results')}
                 className="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold border border-slate-200 transition-all cursor-pointer"
               >
-                <span>Benchmark Matrix</span>
+                <span>45-Scenario Matrix</span>
               </button>
             </div>
           </footer>

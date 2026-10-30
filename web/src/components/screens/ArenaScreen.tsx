@@ -265,20 +265,21 @@ export const ArenaScreen: React.FC = () => {
             </span>
           </div>
 
-          {/* Quick Attack Presets */}
+          {/* Quick Threat Presets */}
           <div className="space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-              Exploit Arsenal Presets:
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block font-mono">
+              Pre-Configured Threat Vectors:
             </span>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1.5 font-mono">
               {attackPresets.map((preset, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => handleApplyPreset(preset)}
-                  className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-[11px] font-medium text-slate-700 transition-all cursor-pointer"
+                  className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-[11px] font-semibold text-slate-700 transition-all cursor-pointer"
                 >
-                  ⚡ {preset.name}
+                  <span className="text-slate-400 mr-1.5 font-normal">[{String(idx + 1).padStart(2, '0')}]</span>
+                  <span>{preset.name}</span>
                 </button>
               ))}
             </div>
