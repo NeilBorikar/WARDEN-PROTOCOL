@@ -6,7 +6,6 @@ import {
   ShieldAlert,
   RotateCcw,
   ShieldCheck,
-  Check,
   X,
   UserCheck,
   DollarSign,
@@ -18,6 +17,8 @@ import type { ApprovalItem } from '../../types/api';
 import { api, DEMO_APPROVALS } from '../../api/client';
 import { MoneyDisplay } from '../common/MoneyDisplay';
 import { AnimatedCounter } from '../common/AnimatedCounter';
+import { TTLCountdownRing } from '../common/TTLCountdownRing';
+import { HoldToConfirmButton } from '../common/HoldToConfirmButton';
 
 interface ApprovalsScreenProps {
   onApprovalResolved?: () => void;
@@ -365,24 +366,60 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
                     )}
                   </div>
 
-                  {/* Right Column: Actions (Zero Greens / Reds) */}
+                  {/* Right Column: Actions with TTL Countdown & Hold-to-Confirm */}
                   {isPending && (
-                    <div className="flex items-center gap-2 shrink-0 w-full lg:w-auto">
-                      <button
-                        onClick={() => handleOpenModal(appr, 'approve')}
-                        className="nixtio-pill-dark px-5 py-2.5 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
-                      >
-                        <Check size={15} />
-                        <span>Authorize & Sign</span>
-                      </button>
+                    <div className="flex items-center gap-3 shrink-0 w-full lg:w-auto justify-between lg:justify-end pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
+                      {/* 15-Minute Single-Use TTL Ring */}
+                      <TTLCountdownRing
+                        expiresAt={appr.expires_at || new Date(new Date(appr.created_at).getTime() + 15 * 60 * 1000).toISOString()}
+                        createdAt={appr.created_at}
+                      />
 
-                      <button
-                        onClick={() => handleOpenModal(appr, 'deny')}
-                        className="px-4 py-2.5 rounded-full border border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all cursor-pointer"
-                      >
-                        <X size={15} />
-                        <span>Reject</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <HoldToConfirmButton
+                          label="Hold to Sign"
+                          onConfirm={async () => {
+                            setSelectedApproval(appr);
+                            setActionType('approve');
+                            // Direct approval execution via existing request
+                            try {
+                              const outcome = await api.resolveApproval(appr.approval_id, 'approve', 'Approved by owner via security console (Hold-to-confirm)');
+                              setApprovals((prev) =>
+                                prev.map((item) =>
+                                  item.approval_id === appr.approval_id
+                                    ? {
+                                        ...item,
+                                        status: 'APPROVED',
+                                        resolved_at: new Date().toISOString(),
+                                        resolution_reason: 'Approved by owner via security console (Hold-to-confirm)',
+                                      }
+                                    : item
+                                )
+                              );
+                              setResolutionNotice({
+                                msg: `Successfully authorized payment of $${(appr.amount_minor / 100).toFixed(2)} to ${appr.payee_email}.`,
+                                type: 'success',
+                                txId: outcome.rail_payment_id || undefined,
+                              });
+                              if (onApprovalResolved) onApprovalResolved();
+                            } catch (err) {
+                              console.error(err);
+                            } finally {
+                              setSelectedApproval(null);
+                              setActionType(null);
+                            }
+                          }}
+                        />
+
+                        <button
+                          onClick={() => handleOpenModal(appr, 'deny')}
+                          className="px-4 py-2.5 rounded-full border border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all cursor-pointer"
+                          title="Reject this payment"
+                        >
+                          <X size={15} />
+                          <span className="sr-only">Reject</span>
+                        </button>
+                      </div>
                     </div>
                   )}
 

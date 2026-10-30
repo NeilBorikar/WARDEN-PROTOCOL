@@ -69,19 +69,30 @@
   background: rgba(100, 116, 139, 0.6);
 }
 
-/* Elite Glass Card Glow */
-.nixtio-card-glow {
-  position: relative;
-  overflow: hidden;
+/* Elite Micro-animations */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
 }
 
-.nixtio-card-glow::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9);
+.animate-shake {
+  animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
+
+@keyframes chipPop {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-chip-pop {
+  animation: chipPop 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Sweeping Chain Highlight */
+.chain-verifying {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), 0 8px 24px -4px rgba(59, 130, 246, 0.15) !important;
+  background-color: #F8FAFF !important;
+}
+
 

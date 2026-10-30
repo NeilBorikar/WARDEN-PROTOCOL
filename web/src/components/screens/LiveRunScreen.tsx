@@ -21,6 +21,7 @@ import { api, DEMO_RUNS } from '../../api/client';
 import { VerdictBadge } from '../common/VerdictBadge';
 import { MoneyDisplay } from '../common/MoneyDisplay';
 import { ProvenanceChip } from '../common/ProvenanceChip';
+import { AttackTheater } from '../common/AttackTheater';
 
 export const LiveRunScreen: React.FC = () => {
   const [selectedScenario, setSelectedScenario] = useState<'legit' | 'injection' | 'swap'>('legit');
@@ -451,6 +452,9 @@ export const LiveRunScreen: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Prominent Attack Theater: Naive Agent vs. Warden Protected Bouncer */}
+      <AttackTheater />
     </div>
   );
 };

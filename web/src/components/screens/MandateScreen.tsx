@@ -12,6 +12,7 @@ import {
 import type { Mandate, Intent } from '../../types/api';
 import { api, DEMO_MANDATE, DEMO_INTENT } from '../../api/client';
 import { MoneyDisplay } from '../common/MoneyDisplay';
+import { ResidualRisks } from '../common/ResidualRisks';
 
 export const MandateScreen: React.FC = () => {
   const [, setMandates] = useState<Mandate[]>([DEMO_MANDATE]);
@@ -434,6 +435,9 @@ export const MandateScreen: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Honest Limitations & Residual Risks Section (Principle P7) */}
+      <ResidualRisks />
     </div>
   );
 };

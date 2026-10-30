@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { type ScreenId } from './components/common/Header';
 import { LiveRunScreen } from './components/screens/LiveRunScreen';
 import { ApprovalsScreen } from './components/screens/ApprovalsScreen';
@@ -8,8 +7,10 @@ import { MandateScreen } from './components/screens/MandateScreen';
 import { AuditScreen } from './components/screens/AuditScreen';
 import { ResultsScreen } from './components/screens/ResultsScreen';
 import { ArenaScreen } from './components/screens/ArenaScreen';
-import { EliteIntroSplash } from './components/common/EliteIntroSplash';
+import { Splash, STAGGER_MS } from './components/common/Splash';
+import { CommandPalette } from './components/common/CommandPalette';
 import { api, DEMO_APPROVALS } from './api/client';
+import { sounds } from './utils/audio';
 import {
   Shield,
   Activity,
@@ -24,31 +25,40 @@ import {
   ArrowUp,
   Mic,
   Zap,
-  Lock,
   RotateCcw,
+  Search,
 } from 'lucide-react';
 import './App.css';
 
-gsap.registerPlugin(ScrollTrigger);
-
 export function App() {
-  const [showSplash, setShowSplash] = useState<boolean>(true);
+  // Show splash once per session unless ?splash=1 is set
+  const [showSplash, setShowSplash] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('splash') === '1') return true;
+    return !sessionStorage.getItem('warden_splash_seen');
+  });
+
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('live-run');
   const [pendingCount, setPendingCount] = useState<number>(DEMO_APPROVALS.length);
   const [commandPrompt, setCommandPrompt] = useState<string>('');
   const [isDemoMode, setIsDemoMode] = useState<boolean>(true);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState<boolean>(false);
+  const [dataReady, setDataReady] = useState<boolean>(false);
 
   const windowRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLElement>(null);
+  const mainLandmarkRef = useRef<HTMLElement>(null);
   const mascotRef = useRef<HTMLDivElement>(null);
 
-  // Sync pending approvals count
+  // Sync pending approvals count & mark dataReady for splash synchronizer
   const refreshPendingCount = async () => {
     try {
       const pending = await api.getApprovals('pending');
       setPendingCount(pending.length);
     } catch {
       setPendingCount(DEMO_APPROVALS.length);
+    } finally {
+      setDataReady(true);
     }
   };
 
@@ -99,48 +109,85 @@ export function App() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Intro Finish Trigger: Animate main window & dock into view
-  const handleIntroComplete = () => {
+  // Global Keyboard Shortcuts (Cmd/Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Reveal Dashboard after Splash Completes (3.0s - 3.8s)
+  const handleSplashComplete = () => {
+    sessionStorage.setItem('warden_splash_seen', 'true');
     setShowSplash(false);
+    sounds.playBouncerOnline();
+
     if (windowRef.current) {
+      windowRef.current.style.visibility = 'visible';
+
       gsap.fromTo(
         windowRef.current,
-        { opacity: 0, y: 35, scale: 0.95 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.85, ease: 'power4.out' }
+        { opacity: 0, y: 8, filter: 'blur(6px)' },
+        {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 0.8,
+          ease: 'power2.out',
+          onComplete: () => {
+            // Move focus to main landmark for accessibility
+            mainLandmarkRef.current?.focus();
+          },
+        }
       );
     }
 
     gsap.fromTo(
       '.sidebar-nav-btn',
-      { opacity: 0, x: -16 },
-      { opacity: 1, x: 0, stagger: 0.05, duration: 0.5, ease: 'back.out(1.8)', delay: 0.1 }
+      { opacity: 0, x: -14 },
+      { opacity: 1, x: 0, stagger: 0.04, duration: 0.45, ease: 'back.out(1.5)', delay: 0.05 }
     );
 
-    if (mascotRef.current) {
-      gsap.fromTo(
-        mascotRef.current,
-        { y: -30, opacity: 0, scale: 0.8 },
-        { y: 0, opacity: 1, scale: 1, duration: 0.75, ease: 'back.out(2)', delay: 0.2 }
-      );
-    }
+    gsap.fromTo(
+      '.nixtio-card',
+      { opacity: 0, y: 12 },
+      {
+        opacity: 1,
+        y: 0,
+        stagger: STAGGER_MS / 1000,
+        duration: 0.5,
+        ease: 'power2.out',
+        delay: 0.1,
+      }
+    );
   };
 
-  // GSAP: Smooth Screen Transition
+  // Replay Splash
+  const handleReplaySplash = () => {
+    setShowSplash(true);
+  };
+
+  // Screen Transitions
   useEffect(() => {
-    if (contentRef.current) {
+    if (mainLandmarkRef.current && !showSplash) {
       gsap.fromTo(
-        contentRef.current,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.32, ease: 'power2.out' }
+        mainLandmarkRef.current,
+        { opacity: 0, y: 8 },
+        { opacity: 1, y: 0, duration: 0.28, ease: 'power2.out' }
       );
     }
-  }, [currentScreen]);
+  }, [currentScreen, showSplash]);
 
   const handleMascotHover = () => {
     if (!mascotRef.current) return;
     gsap.to(mascotRef.current, {
-      scale: 1.1,
-      rotation: 5,
+      scale: 1.08,
+      rotation: 4,
       duration: 0.25,
       ease: 'back.out(2)',
     });
@@ -172,7 +219,10 @@ export function App() {
 
   const handleCommandSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!commandPrompt.trim()) return;
+    if (!commandPrompt.trim()) {
+      setIsCommandPaletteOpen(true);
+      return;
+    }
 
     const lower = commandPrompt.toLowerCase();
     if (lower.includes('approval') || lower.includes('pending')) {
@@ -193,25 +243,44 @@ export function App() {
 
   return (
     <div className="min-h-screen text-slate-800 flex flex-col items-center justify-start py-3 sm:py-6 px-3 sm:px-6 relative overflow-hidden font-sans selection:bg-slate-900 selection:text-white">
-      {/* Elite Title Intro Cinematic Splash Screen */}
-      {showSplash && <EliteIntroSplash onComplete={handleIntroComplete} />}
+      {/* Splash Screen (Removed from DOM after completion) */}
+      {showSplash && (
+        <Splash onComplete={handleSplashComplete} dataReady={dataReady} />
+      )}
+
+      {/* Cmd/Ctrl+K Command Palette */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onNavigate={(screen) => setCurrentScreen(screen)}
+        onRunAttack={() => setCurrentScreen('live-run')}
+        onVerifyChain={() => setCurrentScreen('audit')}
+        onToggleBouncerView={() => setCurrentScreen('results')}
+      />
 
       {/* Abstract curvy lines in the background matching Nixtio shot */}
       <div className="nixtio-curves" />
 
       {/* Background SVG decorative curves with parallax class */}
-      <svg className="nixtio-bg-svg fixed inset-0 w-full h-full pointer-events-none opacity-40 z-0" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        className="nixtio-bg-svg fixed inset-0 w-full h-full pointer-events-none opacity-40 z-0"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <path d="M-100,200 C300,100 600,500 1200,200 C1500,50 1800,400 2000,300" fill="none" stroke="rgba(165,180,252,0.35)" strokeWidth="1.5" />
         <path d="M-100,400 C400,300 700,700 1300,400 C1600,250 1900,600 2200,500" fill="none" stroke="rgba(147,197,253,0.3)" strokeWidth="1.5" />
         <path d="M-50,600 C500,500 800,900 1400,600 C1700,450 2000,800 2300,700" fill="none" stroke="rgba(199,210,254,0.25)" strokeWidth="1.5" />
       </svg>
 
-      {/* Main Nixtio Floating App Window (Generous Widescreen Canvas) */}
+      {/* Main Dashboard Window: Mounted behind splash (visibility: hidden) so API fetches start immediately */}
       <div
         ref={windowRef}
+        style={{
+          visibility: showSplash ? 'hidden' : 'visible',
+          opacity: showSplash ? 0 : 1,
+        }}
         className="nixtio-window w-full max-w-[97vw] xl:max-w-[1740px] 2xl:max-w-[1860px] rounded-[32px] sm:rounded-[44px] flex flex-col md:flex-row relative z-10 overflow-hidden my-auto"
       >
-        {/* Left Vertical Dock / Sidebar (Identical to Nixtio shot) */}
+        {/* Left Vertical Dock / Sidebar */}
         <aside className="w-full md:w-20 bg-white/75 border-b md:border-b-0 md:border-r border-slate-200/70 flex md:flex-col items-center justify-between p-3 sm:p-5 shrink-0 backdrop-blur-md">
           {/* Top Round Black Plus Action Button */}
           <button
@@ -223,7 +292,7 @@ export function App() {
           </button>
 
           {/* Center Navigation Icons */}
-          <nav className="flex md:flex-col items-center gap-2 sm:gap-3">
+          <nav className="flex md:flex-col items-center gap-2 sm:gap-3" aria-label="Main Navigation">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = currentScreen === item.id;
@@ -232,6 +301,7 @@ export function App() {
                   key={item.id}
                   onClick={() => setCurrentScreen(item.id)}
                   title={item.label}
+                  aria-label={item.label}
                   className={`sidebar-nav-btn relative p-2.5 rounded-full transition-all cursor-pointer ${
                     isActive
                       ? 'bg-slate-900 text-white shadow-sm'
@@ -240,7 +310,7 @@ export function App() {
                 >
                   <Icon size={18} />
                   {item.badge !== undefined && item.badge > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-500 text-slate-950 font-mono text-[9px] font-extrabold flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-slate-900 text-white font-mono text-[9px] font-extrabold flex items-center justify-center">
                       {item.badge}
                     </span>
                   )}
@@ -262,7 +332,7 @@ export function App() {
         {/* Center Main Workspace Content Area */}
         <div className="flex-1 flex flex-col p-4 sm:p-7 lg:p-9 min-w-0">
           
-          {/* Top Header Row (Identical to Nixtio shot) */}
+          {/* Top Header Row */}
           <header className="flex items-center justify-between pb-6 border-b border-slate-150/80 mb-6">
             {/* Left: Pill Dropdown Badge */}
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100/80 border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-2xs">
@@ -270,20 +340,27 @@ export function App() {
               <span>Warden Bouncer v0.1.0</span>
             </div>
 
-            {/* Center: Title / Context */}
-            <span className="text-xs font-semibold text-slate-400 tracking-wide uppercase font-mono hidden sm:inline">
-              Autonomous Spending Security Console
-            </span>
+            {/* Center: Command Palette Trigger Button */}
+            <button
+              onClick={() => setIsCommandPaletteOpen(true)}
+              className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/90 text-xs font-medium text-slate-500 hover:text-slate-800 hover:border-slate-300 transition-all cursor-pointer shadow-2xs"
+            >
+              <Search size={13} className="text-slate-400" />
+              <span>Quick Command Search</span>
+              <kbd className="font-mono text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                ⌘K
+              </kbd>
+            </button>
 
-            {/* Right: Black Pill Action Button & Replay Intro */}
+            {/* Right: Actions */}
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setShowSplash(true)}
-                title="Replay Cinematic Title Intro"
+                onClick={handleReplaySplash}
+                title="Replay Minimalist Title Intro"
                 className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-semibold text-slate-700 flex items-center gap-1.5 transition-all cursor-pointer"
               >
                 <RotateCcw size={12} className="text-slate-600" />
-                <span className="hidden sm:inline">Replay Intro</span>
+                <span className="hidden sm:inline">Intro</span>
               </button>
               <button
                 onClick={() => setIsDemoMode(!isDemoMode)}
@@ -348,8 +425,13 @@ export function App() {
             </div>
           </div>
 
-          {/* Active Screen Viewport with GSAP ref */}
-          <main ref={contentRef} className="flex-1 min-h-[460px] pb-6">
+          {/* Active Screen Viewport (Main Landmark with focus target for a11y) */}
+          <main
+            ref={mainLandmarkRef}
+            tabIndex={-1}
+            aria-label="Warden Security Workspace"
+            className="flex-1 min-h-[460px] pb-6 outline-hidden"
+          >
             {currentScreen === 'live-run' && <LiveRunScreen />}
             {currentScreen === 'approvals' && (
               <ApprovalsScreen onApprovalResolved={refreshPendingCount} />
@@ -360,24 +442,23 @@ export function App() {
             {currentScreen === 'arena' && <ArenaScreen />}
           </main>
 
-          {/* Bottom AI Command Bar & Action Pills (Exact Nixtio pattern) */}
-          <footer className="pt-5 border-t border-slate-150/80">
-            {/* Top Caption Row */}
-            <div className="flex items-center justify-between text-[11px] font-medium text-slate-400 mb-2.5 px-2">
-              <span className="flex items-center gap-1.5 text-slate-600 font-semibold">
-                <Lock size={12} className="text-blue-600" />
-                Owner-Signed Ed25519 Spending Security
-              </span>
-              <span>Worst-case loss strictly capped at $0.00</span>
-            </div>
-
-            {/* Input Pill Bar */}
-            <form onSubmit={handleCommandSubmit} className="nixtio-command-pill rounded-full px-4 py-2 flex items-center gap-3 shadow-sm">
+          {/* Bottom Floating Pill Command Input Bar */}
+          <footer className="mt-auto pt-4 border-t border-slate-150/80">
+            <form
+              onSubmit={handleCommandSubmit}
+              onClick={() => {
+                if (!commandPrompt) setIsCommandPaletteOpen(true);
+              }}
+              className="nixtio-command-pill w-full rounded-full p-2 pl-4 flex items-center gap-3 shadow-md"
+            >
               <button
                 type="button"
-                onClick={() => setCurrentScreen('live-run')}
-                className="text-slate-400 hover:text-slate-900 p-1 rounded-full transition-colors cursor-pointer"
-                title="Quick Action"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsCommandPaletteOpen(true);
+                }}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                title="Open Command Palette (⌘K)"
               >
                 <Plus size={16} />
               </button>
@@ -386,7 +467,7 @@ export function App() {
                 type="text"
                 value={commandPrompt}
                 onChange={(e) => setCommandPrompt(e.target.value)}
-                placeholder='Example : "Simulate prompt injection attack against buyer agent" or "Review pending approvals"'
+                placeholder='Type a command or press ⌘K (e.g. "Run attack simulation" or "Review pending approvals")...'
                 className="flex-1 bg-transparent text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden font-medium"
               />
 
@@ -415,7 +496,7 @@ export function App() {
                 className="nixtio-pill-dark px-3.5 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer"
               >
                 <Zap size={12} />
-                <span>Simulate Negotiation</span>
+                <span>Simulate Errand</span>
               </button>
 
               <button
@@ -431,7 +512,7 @@ export function App() {
                 className="nixtio-pill-dark px-3.5 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer"
               >
                 <History size={12} />
-                <span>Verify Preimage Chain</span>
+                <span>Verify Chain</span>
               </button>
 
               <button

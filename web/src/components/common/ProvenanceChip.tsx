@@ -19,43 +19,46 @@ export const ProvenanceChip: React.FC<ProvenanceChipProps> = ({
     OWNER: {
       label: 'OWNER',
       desc: 'Signed directly with owner Ed25519 private key',
-      color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
       icon: KeyRound,
+      variant: 'bg-white border-slate-300 text-slate-900',
     },
     VERIFIED_RECORD: {
       label: 'VERIFIED',
-      desc: 'Validated against owner-signed mandate or intent',
-      color: 'bg-blue-50 text-blue-700 border-blue-200',
+      desc: 'Cryptographically validated against standing mandate or intent',
       icon: ShieldCheck,
+      variant: 'bg-white border-slate-200 text-slate-800',
     },
     AGENT_DERIVED: {
-      label: 'AGENT',
-      desc: 'Synthesized by AI agent reasoning',
-      color: 'bg-sky-50 text-sky-700 border-sky-200',
+      label: 'AGENT_DERIVED',
+      desc: 'Synthesized by untrusted AI agent conversational reasoning',
       icon: Cpu,
+      variant: 'bg-slate-50 border-slate-200 text-slate-600',
     },
     UNTRUSTED_EXTERNAL: {
-      label: 'UNTRUSTED',
-      desc: 'Received from untrusted seller/external chat transcript',
-      color: 'bg-slate-100 text-slate-800 border-slate-300',
+      label: 'UNTRUSTED_EXTERNAL',
+      desc: 'Extracted from untrusted merchant or external party prompt',
       icon: AlertOctagon,
+      variant: 'bg-slate-100 border-slate-300 text-slate-900 font-extrabold',
     },
   }[norm] || {
     label: norm,
-    desc: 'Unknown provenance',
-    color: 'bg-slate-50 text-slate-700 border-slate-200',
+    desc: 'Provenance source uncertified',
     icon: AlertOctagon,
+    variant: 'bg-slate-50 border-slate-200 text-slate-700',
   };
 
   const Icon = config.icon;
 
   return (
     <span
+      tabIndex={0}
+      role="note"
+      aria-label={`${field ? `${field}: ` : ''}${config.label} — ${config.desc}`}
       title={`${field ? `${field}: ` : ''}${config.desc}`}
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border shadow-2xs ${config.color} ${className}`}
+      className={`group relative inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono border shadow-2xs cursor-help transition-all hover:border-slate-400 ${config.variant} ${className}`}
     >
-      <Icon size={11} className="shrink-0" aria-hidden="true" />
-      <span>{field ? <span className="opacity-70 font-normal">{field}: </span> : null}{config.label}</span>
+      <Icon size={11} className="shrink-0 stroke-[2.2]" aria-hidden="true" />
+      <span>{field ? <span className="opacity-60 font-normal mr-1">{field}:</span> : null}{config.label}</span>
     </span>
   );
 };

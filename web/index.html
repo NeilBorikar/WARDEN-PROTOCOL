@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/shield.svg" />
@@ -9,8 +9,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #E8EEFB;
+        background-image: 
+          radial-gradient(circle at 12% 18%, rgba(200, 218, 255, 0.75) 0%, transparent 45%),
+          radial-gradient(circle at 88% 22%, rgba(215, 210, 255, 0.65) 0%, transparent 45%),
+          radial-gradient(circle at 50% 85%, rgba(210, 235, 255, 0.55) 0%, transparent 50%),
+          linear-gradient(135deg, #E6EDFB 0%, #EDF3FD 40%, #E2EAF8 70%, #DAE4F6 100%);
+        background-attachment: fixed;
+        min-height: 100vh;
+      }
+    </style>
   </head>
-  <body class="min-h-screen antialiased selection:bg-blue-600 selection:text-white transition-colors duration-200">
+  <body class="min-h-screen antialiased selection:bg-slate-900 selection:text-white transition-colors duration-200">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
