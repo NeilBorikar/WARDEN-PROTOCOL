@@ -121,11 +121,21 @@ export function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Ensure scroll is at the top on mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
+
   // Reveal Dashboard after Splash Completes (3.0s - 3.8s)
   const handleSplashComplete = () => {
     sessionStorage.setItem('warden_splash_seen', 'true');
     setShowSplash(false);
     sounds.playBouncerOnline();
+
+    // Ensure the viewport is pinned to the very top
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
 
     if (windowRef.current) {
       windowRef.current.style.visibility = 'visible';
@@ -140,8 +150,9 @@ export function App() {
           duration: 0.8,
           ease: 'power2.out',
           onComplete: () => {
-            // Move focus to main landmark for accessibility
-            mainLandmarkRef.current?.focus();
+            // Move focus to main landmark for accessibility WITHOUT scrolling the window
+            mainLandmarkRef.current?.focus({ preventScroll: true });
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
           },
         }
       );
@@ -172,8 +183,9 @@ export function App() {
     setShowSplash(true);
   };
 
-  // Screen Transitions
+  // Screen Transitions: Scroll to top cleanly
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     if (mainLandmarkRef.current && !showSplash) {
       gsap.fromTo(
         mainLandmarkRef.current,
@@ -242,7 +254,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen text-slate-800 flex flex-col items-center justify-start py-3 sm:py-6 px-3 sm:px-6 relative overflow-hidden font-sans selection:bg-slate-900 selection:text-white">
+    <div className="min-h-screen text-slate-800 flex flex-col items-center justify-start py-2 sm:py-5 px-2 sm:px-5 relative overflow-hidden font-sans selection:bg-slate-900 selection:text-white">
       {/* Splash Screen (Removed from DOM after completion) */}
       {showSplash && (
         <Splash onComplete={handleSplashComplete} dataReady={dataReady} />
@@ -271,14 +283,14 @@ export function App() {
         <path d="M-50,600 C500,500 800,900 1400,600 C1700,450 2000,800 2300,700" fill="none" stroke="rgba(199,210,254,0.25)" strokeWidth="1.5" />
       </svg>
 
-      {/* Main Dashboard Window: Mounted behind splash (visibility: hidden) so API fetches start immediately */}
+      {/* Main Dashboard Window: Starts directly at the top with my-0 */}
       <div
         ref={windowRef}
         style={{
           visibility: showSplash ? 'hidden' : 'visible',
           opacity: showSplash ? 0 : 1,
         }}
-        className="nixtio-window w-full max-w-[97vw] xl:max-w-[1740px] 2xl:max-w-[1860px] rounded-[32px] sm:rounded-[44px] flex flex-col md:flex-row relative z-10 overflow-hidden my-auto"
+        className="nixtio-window w-full max-w-[97vw] xl:max-w-[1740px] 2xl:max-w-[1860px] rounded-[32px] sm:rounded-[44px] flex flex-col md:flex-row relative z-10 overflow-hidden my-0"
       >
         {/* Left Vertical Dock / Sidebar */}
         <aside className="w-full md:w-20 bg-white/75 border-b md:border-b-0 md:border-r border-slate-200/70 flex md:flex-col items-center justify-between p-3 sm:p-5 shrink-0 backdrop-blur-md">
