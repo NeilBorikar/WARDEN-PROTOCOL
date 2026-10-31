@@ -43,7 +43,7 @@ export const ApprovalsScreen: React.FC<ApprovalsScreenProps> = ({ onApprovalReso
     setIsLoading(true);
     try {
       const data = await api.getApprovals();
-      setApprovals(data);
+      setApprovals(data && data.length > 0 ? data : DEMO_APPROVALS);
     } catch {
       setApprovals(DEMO_APPROVALS);
     } finally {

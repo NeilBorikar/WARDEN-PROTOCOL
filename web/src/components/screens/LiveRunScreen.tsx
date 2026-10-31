@@ -77,7 +77,7 @@ export const LiveRunScreen: React.FC = () => {
 
   const handleRunScenario = async (scenario: 'legit' | 'injection' | 'swap') => {
     setIsLoading(true);
-    setActiveStep(1);
+    setActiveStep(0);
 
     try {
       const data = await api.startRun({
@@ -86,7 +86,7 @@ export const LiveRunScreen: React.FC = () => {
       });
 
       setCurrentRun(data);
-      let step = 1;
+      let step = 0;
       const interval = setInterval(() => {
         step += 1;
         setActiveStep(step);
@@ -98,7 +98,7 @@ export const LiveRunScreen: React.FC = () => {
             gsap.fromTo(decisionRef.current, { scale: 0.98 }, { scale: 1, duration: 0.35, ease: 'back.out(2)' });
           }
         }
-      }, 350);
+      }, 300);
     } catch {
       const fallback =
         scenario === 'injection'
@@ -183,11 +183,41 @@ export const LiveRunScreen: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <button
+                onClick={() => setSelectedScenario('legit')}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all cursor-pointer ${
+                  selectedScenario === 'legit'
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200'
+                }`}
+              >
+                Legit ($65)
+              </button>
+              <button
+                onClick={() => setSelectedScenario('injection')}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all cursor-pointer ${
+                  selectedScenario === 'injection'
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200'
+                }`}
+              >
+                Injection ($850)
+              </button>
+              <button
+                onClick={() => setSelectedScenario('swap')}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all cursor-pointer ${
+                  selectedScenario === 'swap'
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200'
+                }`}
+              >
+                BEC Swap ($45)
+              </button>
               <button
                 onClick={() => handleRunScenario(selectedScenario)}
                 disabled={isLoading}
-                className="nixtio-pill-dark px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer"
+                className="nixtio-pill-dark px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer ml-1"
               >
                 {isLoading ? (
                   <>

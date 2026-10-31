@@ -123,10 +123,88 @@ def _seed_demo_state_on_startup() -> None:
         ts=now - timedelta(hours=3),
     )
 
+    # Seed 2 realistic pending approvals so the Approvals screen is immediately active
+    from app.mandate.models import PayeeInfo, PaymentRequest
+    from app.policy.provenance import ProvenanceTag
+    from app.policy.verdict import Decision, Reason, Verdict
+
+    req1 = PaymentRequest(
+        request_id="req-6500-legit",
+        mandate_id=mandate.mandate_id,
+        intent_id=intent.intent_id,
+        deal_id="deal-8842",
+        tool_name="payouts",
+        payee=PayeeInfo(id="PAYEE-OFFICE-01", email="office@supplies.test"),
+        amount_minor=6500,
+        currency="USD",
+        purpose="OFFICE_SUPPLIES",
+        memo="Keyboard and USB-C Hub procurement",
+        provenance={
+            "payee": ProvenanceTag.VERIFIED_RECORD.value,
+            "amount_minor": ProvenanceTag.VERIFIED_RECORD.value,
+            "purpose": ProvenanceTag.OWNER.value,
+            "memo": ProvenanceTag.AGENT_DERIVED.value,
+        },
+        idempotency_key="idem-demo-6500",
+        created_at=now - timedelta(minutes=3),
+    )
+    dec1 = Decision(
+        verdict=Verdict.ASK_OWNER,
+        reasons=[
+            Reason(
+                code="AMOUNT_EXCEEDS_APPROVAL_THRESHOLD",
+                check_id="C4",
+                message="Requested amount $65.00 exceeds standing approval threshold $50.00. Owner confirmation required.",
+            )
+        ],
+        policy_version="1.0.0",
+        mandate_hash="9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        request_hash=req1.compute_hash(),
+        evaluated_at=now - timedelta(minutes=3),
+    )
+    state.approval_service.create_request(payment_request=req1, decision=dec1, now=now - timedelta(minutes=3))
+
+    req2 = PaymentRequest(
+        request_id="req-8900-cloud",
+        mandate_id=mandate.mandate_id,
+        intent_id=intent.intent_id,
+        deal_id="deal-8900",
+        tool_name="payouts",
+        payee=PayeeInfo(id="NEW-PAYEE-09", email="hosting@cloudservices.test"),
+        amount_minor=8900,
+        currency="USD",
+        purpose="SOFTWARE",
+        memo="Monthly staging server upgrade",
+        provenance={
+            "payee": ProvenanceTag.UNTRUSTED_EXTERNAL.value,
+            "amount_minor": ProvenanceTag.VERIFIED_RECORD.value,
+            "purpose": ProvenanceTag.OWNER.value,
+            "memo": ProvenanceTag.AGENT_DERIVED.value,
+        },
+        idempotency_key="idem-demo-8900",
+        created_at=now - timedelta(minutes=7),
+    )
+    dec2 = Decision(
+        verdict=Verdict.ASK_OWNER,
+        reasons=[
+            Reason(
+                code="NEW_PAYEE_CONFIRMATION",
+                check_id="C3",
+                message="Payee 'hosting@cloudservices.test' is not yet in allowlist. Mandate policy triggers owner approval.",
+            )
+        ],
+        policy_version="1.0.0",
+        mandate_hash="9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        request_hash=req2.compute_hash(),
+        evaluated_at=now - timedelta(minutes=7),
+    )
+    state.approval_service.create_request(payment_request=req2, decision=dec2, now=now - timedelta(minutes=7))
+
     logger.info(
-        "Demo state seeded: mandate=%s, intent=%s, audit_events=%d",
+        "Demo state seeded: mandate=%s, intent=%s, pending_approvals=%d, audit_events=%d",
         mandate.mandate_id,
         intent.intent_id,
+        len(state.approval_service.list_pending()),
         len(state.audit_log.events),
     )
 
