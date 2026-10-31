@@ -39,6 +39,14 @@ export const MandateScreen: React.FC = () => {
     }).catch(() => {
       setMandates([DEMO_MANDATE]);
     });
+
+    api.getIntents().then((data) => {
+      if (data && data.length > 0) {
+        setIntents(data);
+      }
+    }).catch(() => {
+      setIntents([DEMO_INTENT]);
+    });
   }, []);
 
   // GSAP: Animate tab content switch

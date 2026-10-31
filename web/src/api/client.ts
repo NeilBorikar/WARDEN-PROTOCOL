@@ -596,6 +596,11 @@ export const api = {
     return fetchJson<Mandate[]>(`${API_BASE}/mandates`, {}, [DEMO_MANDATE]);
   },
 
+  async getIntents(mandateId?: string): Promise<Intent[]> {
+    const url = mandateId ? `${API_BASE}/mandates/${mandateId}/intents` : `${API_BASE}/mandates/intents`;
+    return fetchJson<Intent[]>(url, {}, [DEMO_INTENT]);
+  },
+
   async createMandate(mandateData: Partial<Mandate>): Promise<Mandate> {
     return fetchJson<Mandate>(
       `${API_BASE}/mandates`,

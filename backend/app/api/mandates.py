@@ -56,13 +56,92 @@ class CreateIntentRequest(BaseModel):
     intent_id: str = Field(
         default_factory=lambda: f"intent-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     )
-    mandate_id: str
+    mandate_id: str | None = None
     description: str = "Procure supplies"
     max_total_minor: int = 5000  # $50.00
     items: list[dict[str, Any]] = Field(
         default_factory=lambda: [{"sku": "ITEM-01", "qty": 1, "max_unit_price_minor": 5000}]
     )
     valid_hours: int = 24
+
+
+@router.get("/intents", response_model=list[dict[str, Any]])
+@router.get("/intents/list", response_model=list[dict[str, Any]])
+def list_intents(state: AppState = Depends(get_app_state)) -> list[dict[str, Any]]:
+    """List all created errand intents."""
+    from app.api.runs import _ensure_default_mandate_and_intent
+
+    _ensure_default_mandate_and_intent(state)
+    return [i.model_dump() for i in state.intents.values()]
+
+
+@router.get("/{mandate_id}/intents", response_model=list[dict[str, Any]])
+def list_mandate_intents(
+    mandate_id: str,
+    state: AppState = Depends(get_app_state),
+) -> list[dict[str, Any]]:
+    """List all errand intents for a specific mandate."""
+    from app.api.runs import _ensure_default_mandate_and_intent
+
+    _ensure_default_mandate_and_intent(state)
+    matched = [i.model_dump() for i in state.intents.values() if i.mandate_id == mandate_id]
+    if not matched:
+        matched = [i.model_dump() for i in state.intents.values()]
+    return matched
+
+
+@router.post("/intents", response_model=dict[str, Any], status_code=status.HTTP_201_CREATED)
+@router.post("/{mandate_id}/intents", response_model=dict[str, Any], status_code=status.HTTP_201_CREATED)
+def create_intent(
+    req: CreateIntentRequest,
+    mandate_id: str | None = None,
+    state: AppState = Depends(get_app_state),
+) -> dict[str, Any]:
+    """Create and sign a new Intent referencing an existing Mandate."""
+    target_mandate_id = mandate_id or req.mandate_id
+    mandate = state.mandates.get(target_mandate_id) if target_mandate_id else None
+    if not mandate:
+        # Fall back to default demo mandate if exists
+        mandate = next(iter(state.mandates.values()), None)
+    if not mandate:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Referenced Mandate '{target_mandate_id}' does not exist.",
+        )
+
+    priv_hex, pub_hex = generate_keypair()
+    now = datetime.now(UTC)
+
+    items = [
+        IntentItem(
+            sku=it["sku"],
+            qty=it.get("qty", 1),
+            max_unit_price_minor=it.get("max_unit_price_minor", req.max_total_minor),
+        )
+        for it in req.items
+    ]
+
+    intent = Intent.create_and_sign(
+        intent_id=req.intent_id,
+        mandate_id=mandate.mandate_id,
+        description=req.description,
+        max_total_minor=req.max_total_minor,
+        items=items,
+        deadline=now + timedelta(hours=req.valid_hours),
+        private_key_hex=priv_hex,
+    )
+    state.intents[intent.intent_id] = intent
+
+    state.audit_log.append(
+        type_="INTENT_CREATED",
+        payload={
+            "intent_id": intent.intent_id,
+            "mandate_id": intent.mandate_id,
+            "max_total_minor": intent.max_total_minor,
+        },
+    )
+
+    return intent.model_dump()
 
 
 @router.get("", response_model=list[dict[str, Any]])
@@ -139,59 +218,3 @@ def create_mandate(
 
     return mandate.model_dump()
 
-
-@router.get("/intents/list", response_model=list[dict[str, Any]])
-def list_intents(state: AppState = Depends(get_app_state)) -> list[dict[str, Any]]:
-    """List all created errand intents."""
-    from app.api.runs import _ensure_default_mandate_and_intent
-
-    _ensure_default_mandate_and_intent(state)
-    return [i.model_dump() for i in state.intents.values()]
-
-
-@router.post("/intents", response_model=dict[str, Any], status_code=status.HTTP_201_CREATED)
-def create_intent(
-    req: CreateIntentRequest,
-    state: AppState = Depends(get_app_state),
-) -> dict[str, Any]:
-    """Create and sign a new Intent referencing an existing Mandate."""
-    mandate = state.mandates.get(req.mandate_id)
-    if not mandate:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Referenced Mandate '{req.mandate_id}' does not exist.",
-        )
-
-    priv_hex, pub_hex = generate_keypair()
-    now = datetime.now(UTC)
-
-    items = [
-        IntentItem(
-            sku=it["sku"],
-            qty=it.get("qty", 1),
-            max_unit_price_minor=it.get("max_unit_price_minor", req.max_total_minor),
-        )
-        for it in req.items
-    ]
-
-    intent = Intent.create_and_sign(
-        intent_id=req.intent_id,
-        mandate_id=mandate.mandate_id,
-        description=req.description,
-        max_total_minor=req.max_total_minor,
-        items=items,
-        deadline=now + timedelta(hours=req.valid_hours),
-        private_key_hex=priv_hex,
-    )
-    state.intents[intent.intent_id] = intent
-
-    state.audit_log.append(
-        type_="INTENT_CREATED",
-        payload={
-            "intent_id": intent.intent_id,
-            "mandate_id": intent.mandate_id,
-            "max_total_minor": intent.max_total_minor,
-        },
-    )
-
-    return intent.model_dump()

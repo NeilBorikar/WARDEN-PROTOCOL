@@ -383,10 +383,10 @@ export const ArenaScreen: React.FC = () => {
 
               <div className="space-y-1 text-xs">
                 <span className="text-slate-400 font-semibold block">Warden Bouncer Defense:</span>
-                {lastVerdict.reasons.map((r, i) => (
+                {lastVerdict.reasons.map((r: any, i) => (
                   <div key={i} className="text-slate-800 font-mono text-[11px] flex items-start gap-1.5 font-medium bg-white p-2 rounded-xl border border-slate-200">
                     <ShieldCheck size={14} className="text-blue-600 shrink-0 mt-0.5" />
-                    <span>{r}</span>
+                    <span>{typeof r === 'string' ? r : (r?.message || r?.code || JSON.stringify(r))}</span>
                   </div>
                 ))}
               </div>
@@ -428,7 +428,11 @@ export const ArenaScreen: React.FC = () => {
 
                 <div className="text-[10px] text-slate-500 flex justify-between items-center pt-1.5 border-t border-slate-200/60">
                   <span className="text-blue-700 font-semibold">Stolen: $0.00</span>
-                  <span className="text-slate-400 truncate max-w-[150px]">{item.reasons[0] || 'BLOCKED'}</span>
+                  <span className="text-slate-400 truncate max-w-[150px]">
+                    {typeof item.reasons?.[0] === 'string'
+                      ? item.reasons[0]
+                      : (item.reasons?.[0] as any)?.message || 'BLOCKED'}
+                  </span>
                 </div>
               </div>
             ))}

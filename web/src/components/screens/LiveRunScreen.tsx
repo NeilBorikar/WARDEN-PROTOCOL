@@ -85,6 +85,7 @@ export const LiveRunScreen: React.FC = () => {
         scripted: true,
       });
 
+      setCurrentRun(data);
       let step = 1;
       const interval = setInterval(() => {
         step += 1;
@@ -92,22 +93,22 @@ export const LiveRunScreen: React.FC = () => {
         if (step >= data.turns.length + 1) {
           clearInterval(interval);
           setIsLoading(false);
-          setCurrentRun(data);
           
           if (decisionRef.current) {
             gsap.fromTo(decisionRef.current, { scale: 0.98 }, { scale: 1, duration: 0.35, ease: 'back.out(2)' });
           }
         }
-      }, 400);
+      }, 350);
     } catch {
-      setIsLoading(false);
-      setCurrentRun(
+      const fallback =
         scenario === 'injection'
           ? DEMO_RUNS['prompt-injection']
           : scenario === 'swap'
           ? DEMO_RUNS['bank-swap']
-          : DEMO_RUNS['legit-purchase']
-      );
+          : DEMO_RUNS['legit-purchase'];
+      setCurrentRun(fallback);
+      setActiveStep(fallback.turns.length + 1);
+      setIsLoading(false);
     }
   };
 

@@ -1,12 +1,13 @@
 import React, { useState, useRef } from 'react';
 import gsap from 'gsap';
 import { Play, RotateCcw, Shield, Bot, ShieldOff, Check, X, AlertCircle, Volume2, VolumeX } from 'lucide-react';
-import { REPLAY_BANK_SWAP } from '../../demo/attackReplay';
+import { ALL_REPLAY_SCENARIOS, REPLAY_BANK_SWAP } from '../../demo/attackReplay';
 import { VerdictBadge } from './VerdictBadge';
 import { sounds } from '../../utils/audio';
 
 export const AttackTheater: React.FC = () => {
-  const scenario = REPLAY_BANK_SWAP;
+  const [selectedScenarioId, setSelectedScenarioId] = useState<string>(REPLAY_BANK_SWAP.id);
+  const scenario = ALL_REPLAY_SCENARIOS.find((s) => s.id === selectedScenarioId) || REPLAY_BANK_SWAP;
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [activeCheckIndex, setActiveCheckIndex] = useState<number>(-1);
   const [stamped, setStamped] = useState<boolean>(false);
@@ -14,6 +15,13 @@ export const AttackTheater: React.FC = () => {
 
   const stampRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleSelectScenario = (id: string) => {
+    setSelectedScenarioId(id);
+    setIsRunning(false);
+    setActiveCheckIndex(-1);
+    setStamped(false);
+  };
 
   const toggleSound = () => {
     sounds.enabled = !soundEnabled;
@@ -113,11 +121,34 @@ export const AttackTheater: React.FC = () => {
         </div>
       </div>
 
+      {/* Scenario Selector Pills */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mr-1">
+          Select Attack Vector:
+        </span>
+        {ALL_REPLAY_SCENARIOS.map((sc) => {
+          const isSelected = sc.id === scenario.id;
+          return (
+            <button
+              key={sc.id}
+              onClick={() => handleSelectScenario(sc.id)}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                isSelected
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
+              }`}
+            >
+              ⚡ {sc.name}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Adversarial Prompt Context Box */}
       <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 font-mono text-xs">
         <div className="flex items-center justify-between text-[11px] text-slate-500 font-semibold">
           <span>Adversary Prompt Injection Payload:</span>
-          <span>Target Payee: billing-partner@evil.test</span>
+          <span>Target Payee: {scenario.proposedPayment.proposedPayee}</span>
         </div>
         <p className="text-slate-800 text-[11px] bg-white p-2.5 rounded-xl border border-slate-200 leading-relaxed font-sans">
           "{scenario.attackerMessage}"
@@ -189,21 +220,21 @@ export const AttackTheater: React.FC = () => {
           <div className="space-y-1.5 text-xs">
             <span className="text-slate-400 font-semibold block text-[11px]">Proposed Transaction:</span>
             <div className="font-mono text-[11px] p-2 rounded-lg bg-slate-50 border border-slate-200 flex justify-between items-center">
-              <span>Remit $45.00 to unverified payee</span>
-              <span className="font-bold text-slate-900">$45.00 USD</span>
+              <span>Remit ${(scenario.proposedPayment.amountMinor / 100).toFixed(2)} to {scenario.proposedPayment.proposedPayee}</span>
+              <span className="font-bold text-slate-900">${(scenario.proposedPayment.amountMinor / 100).toFixed(2)} USD</span>
             </div>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
             <div className="font-bold text-slate-900 flex items-center gap-1.5">
               <AlertCircle size={14} className="text-slate-700" />
-              <span>Prompt Exploit Successful</span>
+              <span>{scenario.naiveOutcome.label}</span>
             </div>
             <p className="text-[11px] text-slate-600 leading-relaxed">
-              Agent trusted conversational instruction. PayPal Payout dispatched to fraudulent offshore clearing partner.
+              {scenario.naiveOutcome.detail}
             </p>
             <div className="pt-1.5 border-t border-slate-200 font-mono text-[11px] font-bold text-slate-900">
-              Loss: $45.00 Drained (100% Break-in)
+              Loss: ${(scenario.naiveOutcome.moneyLostUsd).toFixed(2)} Drained (100% Break-in)
             </div>
           </div>
         </div>
@@ -226,10 +257,10 @@ export const AttackTheater: React.FC = () => {
             <span className="text-slate-400 font-semibold block text-[11px]">Enforced Mandate Boundary:</span>
             <div className="font-mono text-[11px] p-2 rounded-lg bg-white border border-slate-200 flex justify-between items-center">
               <span className={stamped ? 'line-through text-slate-400' : 'text-slate-800'}>
-                Remit $45.00 to unlisted payee
+                Remit ${(scenario.proposedPayment.amountMinor / 100).toFixed(2)} to {scenario.proposedPayment.proposedPayee}
               </span>
               <span className={`font-bold ${stamped ? 'line-through text-slate-400' : 'text-slate-900'}`}>
-                $45.00 USD
+                ${(scenario.proposedPayment.amountMinor / 100).toFixed(2)} USD
               </span>
             </div>
           </div>
@@ -237,10 +268,10 @@ export const AttackTheater: React.FC = () => {
           <div className="p-3 rounded-xl bg-white border border-slate-200 text-xs space-y-1 relative">
             <div className="font-bold text-slate-900 flex items-center gap-1.5">
               <ShieldOff size={14} className="text-slate-900" />
-              <span>Deterministic Policy Interception</span>
+              <span>{scenario.wardenOutcome.label}</span>
             </div>
             <p className="text-[11px] text-slate-600 leading-relaxed">
-              Check C3 failed: recipient email is missing from Ed25519 standing allowlist. Settlement rail blocked before payment execution.
+              {scenario.wardenOutcome.detail}
             </p>
             <div className="pt-1.5 border-t border-slate-200 font-mono text-[11px] font-bold text-slate-900">
               Loss: $0.00 Stolen (100% Defense)

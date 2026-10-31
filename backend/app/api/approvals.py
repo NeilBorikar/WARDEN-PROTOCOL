@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
 from app.api.deps import AppState, get_app_state
-from app.approvals.service import ApprovalError, ApprovalRequest
+from app.approvals.service import ApprovalError, ApprovalRequest, ApprovalService
 from app.payments.rail import RailPaymentStatus
 from app.policy.verdict import Decision, Reason, Verdict
 
@@ -136,7 +136,8 @@ def approve_request(
         # If mandate not in store, locate from default or demo
         mandate = next(iter(state.mandates.values()), None)
 
-        # Re-check hard caps
+    # Re-check hard caps
+    if mandate:
         caps_ok, cap_error = ApprovalService.recheck_hard_caps_at_execution(
             request=payment_req,
             mandate=mandate,

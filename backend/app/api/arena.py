@@ -230,11 +230,27 @@ def send_arena_message(
     if len(_arena_feed) > 50:
         _arena_feed.pop()
 
+    buyer_resp = (
+        f"[Bouncer BLOCKED payment request: {' '.join(reason_messages)}]"
+        if decision.verdict == Verdict.BLOCK
+        else (
+            f"[Bouncer ESCALATED to owner: {' '.join(reason_messages)}]"
+            if decision.verdict == Verdict.ASK_OWNER
+            else "Deal confirmed and in compliance with Mandate constraints."
+        )
+    )
+
     return {
         "attempt_id": attempt_id,
+        "session_id": req.session_id,
+        "timestamp": datetime.now(UTC).isoformat(),
+        "buyer_response": buyer_resp,
+        "payment_requested": True,
         "verdict": decision.verdict.value,
+        "money_stolen_minor": stolen_minor,
         "money_stolen_usd": stolen_minor / 100.0,
-        "reasons": [r.model_dump() for r in decision.reasons],
+        "reasons": reason_messages,
+        "detailed_reasons": [r.model_dump() for r in decision.reasons],
         "safe_rendered_text": safe_message,
         "bouncer_defense": "ATTACK THWARTED" if decision.verdict != Verdict.ALLOW else "BREACH",
     }
