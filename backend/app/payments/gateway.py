@@ -10,7 +10,8 @@ Exit Criterion: Money moves in the sandbox only via the Bouncer.
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
+import threading
+from dataclasses import dataclass, field
 
 from app.approvals.service import ApprovalRequest, ApprovalService
 from app.audit.log import AuditLog
@@ -60,6 +61,19 @@ class PaymentGateway:
         self.rail = rail
         self.audit_log = audit_log
         self.approval_service = approval_service
+        self._lock = threading.Lock()
+        self._history: list[HistoricalPayment] = []
+        self._reservations: dict[str, HistoricalPayment] = {}
+
+    def get_historical_payments(self) -> list[HistoricalPayment]:
+        """Return a snapshot copy of all committed payments."""
+        with self._lock:
+            return list(self._history)
+
+    def get_active_reservations(self) -> dict[str, HistoricalPayment]:
+        """Return a snapshot copy of in-flight reservations."""
+        with self._lock:
+            return dict(self._reservations)
 
     def process_payment(
         self,
@@ -70,57 +84,90 @@ class PaymentGateway:
         deal: Deal | None = None,
         historical_payments: list[HistoricalPayment] | None = None,
     ) -> GatewayOutcome:
-        """Evaluate request through the Bouncer; if ALLOW, execute on payment rail."""
-        # 1. Deterministic Bouncer policy evaluation
-        decision = PolicyEngine.evaluate(
-            request=request,
-            mandate=mandate,
-            intent=intent,
-            deal=deal,
-            owner_public_key_hex=owner_public_key_hex,
-            history=historical_payments,
-        )
+        """Two-phase check-and-reserve Bouncer evaluation and rail dispatch.
 
-        # 2. Case: BLOCK
-        if decision.verdict == Verdict.BLOCK:
-            self.audit_log.append(
-                type_="PAYMENT_BLOCKED",
-                payload={
-                    "request_id": request.request_id,
-                    "mandate_id": request.mandate_id,
-                    "amount_minor": request.amount_minor,
-                    "currency": request.currency,
-                    "payee": {"email": request.payee.email, "id": request.payee.id},
-                    "reasons": [r.model_dump() for r in decision.reasons],
-                },
+        WHY:
+        1. Lock only check-and-reserve: The lock is held for microsecond policy checks
+           and balance reservation, NEVER during external PayPal network I/O.
+        2. In-flight protection: Parallel requests evaluate against committed history
+           PLUS active in-flight reservations, preventing concurrent overspend.
+        3. Safe failure: If PayPal times out or rejects, the reservation is immediately
+           released, preventing permanent cap loss on transient network errors.
+        """
+        # PHASE 1: ATOMIC CHECK & RESERVE (HELD UNDER LOCK)
+        with self._lock:
+            # Combine committed history + active reservations + external records
+            active_history = list(self._history) + list(self._reservations.values())
+            if historical_payments:
+                active_history.extend(historical_payments)
+
+            # Deterministic policy evaluation
+            decision = PolicyEngine.evaluate(
+                request=request,
+                mandate=mandate,
+                intent=intent,
+                deal=deal,
+                owner_public_key_hex=owner_public_key_hex,
+                history=active_history,
             )
-            return GatewayOutcome(decision=decision)
 
-        # 3. Case: ASK_OWNER
-        if decision.verdict == Verdict.ASK_OWNER:
-            approval_req: ApprovalRequest | None = None
-            if self.approval_service is not None:
-                approval_req = self.approval_service.create_request(
-                    payment_request=request,
-                    decision=decision,
+            # Case: BLOCK
+            if decision.verdict == Verdict.BLOCK:
+                self.audit_log.append(
+                    type_="PAYMENT_BLOCKED",
+                    payload={
+                        "request_id": request.request_id,
+                        "mandate_id": request.mandate_id,
+                        "amount_minor": request.amount_minor,
+                        "currency": request.currency,
+                        "payee": {"email": request.payee.email, "id": request.payee.id},
+                        "reasons": [r.model_dump() for r in decision.reasons],
+                    },
                 )
+                return GatewayOutcome(decision=decision)
 
-            self.audit_log.append(
-                type_="PAYMENT_APPROVAL_REQUESTED",
-                payload={
-                    "request_id": request.request_id,
-                    "mandate_id": request.mandate_id,
-                    "amount_minor": request.amount_minor,
-                    "currency": request.currency,
-                    "approval_id": approval_req.approval_id if approval_req else None,
-                    "reasons": [r.model_dump() for r in decision.reasons],
-                },
+            # Case: ASK_OWNER
+            if decision.verdict == Verdict.ASK_OWNER:
+                approval_req: ApprovalRequest | None = None
+                if self.approval_service is not None:
+                    approval_req = self.approval_service.create_request(
+                        payment_request=request,
+                        decision=decision,
+                    )
+
+                self.audit_log.append(
+                    type_="PAYMENT_APPROVAL_REQUESTED",
+                    payload={
+                        "request_id": request.request_id,
+                        "mandate_id": request.mandate_id,
+                        "amount_minor": request.amount_minor,
+                        "currency": request.currency,
+                        "approval_id": approval_req.approval_id if approval_req else None,
+                        "reasons": [r.model_dump() for r in decision.reasons],
+                    },
+                )
+                return GatewayOutcome(decision=decision, approval_request=approval_req)
+
+            # Case: ALLOW -> Reserve funds in-flight before releasing lock
+            reservation = HistoricalPayment(
+                amount_minor=request.amount_minor,
+                executed_at=request.created_at,
             )
-            return GatewayOutcome(decision=decision, approval_request=approval_req)
+            self._reservations[request.request_id] = reservation
 
-        # 4. Case: ALLOW -> Execute on Payment Rail
+        # PHASE 2: DISPATCH TO RAIL (OUTSIDE THE LOCK - NON-BLOCKING)
         try:
             payment_result = self.rail.execute_payment(request=request, decision=decision)
+
+            # PHASE 3A: COMMIT RESERVATION ON SUCCESS
+            with self._lock:
+                self._reservations.pop(request.request_id, None)
+                self._history.append(
+                    HistoricalPayment(
+                        amount_minor=payment_result.amount_minor,
+                        executed_at=request.created_at,
+                    )
+                )
 
             self.audit_log.append(
                 type_="PAYMENT_EXECUTED",
@@ -137,6 +184,10 @@ class PaymentGateway:
             return GatewayOutcome(decision=decision, payment_result=payment_result)
 
         except PaymentNotAllowedError as pna_err:
+            # PHASE 3B: ROLLBACK RESERVATION ON FAILURE
+            with self._lock:
+                self._reservations.pop(request.request_id, None)
+
             logger.error("Bouncer blocked rail execution: %s", pna_err)
             self.audit_log.append(
                 type_="PAYMENT_EXECUTION_DENIED",
@@ -147,7 +198,11 @@ class PaymentGateway:
             )
             return GatewayOutcome(decision=decision, error_message=str(pna_err))
 
-        except RailError as rail_err:
+        except Exception as rail_err:
+            # PHASE 3C: ROLLBACK RESERVATION ON TIMEOUT OR RAIL ERROR
+            with self._lock:
+                self._reservations.pop(request.request_id, None)
+
             logger.error("Payment rail error: %s", rail_err)
             self.audit_log.append(
                 type_="PAYMENT_RAIL_FAILED",

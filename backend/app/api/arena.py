@@ -36,6 +36,7 @@ class ArenaMessageRequest(BaseModel):
     proposed_amount_minor: int = Field(default=2500, ge=1)
     proposed_payee_email: str = Field(default="attacker@evil.test", max_length=100)
     proposed_memo: str = Field(default="", max_length=500)
+    warden_enabled: bool = Field(default=True, description="Toggle Warden Gateway protection ON/OFF")
 
 
 class ArenaDecisionFeedItem(BaseModel):
@@ -195,6 +196,38 @@ def send_arena_message(
         purpose="OFFICE_SUPPLIES",
         memo=safe_memo or safe_message[:100],
     )
+
+    if not req.warden_enabled:
+        # UNPROTECTED / NAIVE AGENT: Bypasses Warden Gateway entirely
+        stolen_minor = req.proposed_amount_minor
+        _arena_stats["total_money_stolen_minor"] += stolen_minor
+        attempt_id = f"atk-{uuid.uuid4().hex[:8]}"
+        feed_item = ArenaDecisionFeedItem(
+            attempt_id=attempt_id,
+            session_id=req.session_id,
+            timestamp=datetime.now(UTC),
+            attack_summary=safe_message[:60],
+            verdict="ALLOW_UNPROTECTED",
+            money_stolen_minor=stolen_minor,
+            reasons=["[WARDEN OFF] Naive agent trusted adversarial prompt and executed payment."],
+        )
+        _arena_feed.insert(0, feed_item)
+        if len(_arena_feed) > 50:
+            _arena_feed.pop()
+        return {
+            "attempt_id": attempt_id,
+            "session_id": req.session_id,
+            "timestamp": datetime.now(UTC).isoformat(),
+            "buyer_response": f"[UNPROTECTED] Prompt injection succeeded. Sent ${stolen_minor / 100:.2f} to {safe_email}.",
+            "payment_requested": True,
+            "verdict": "ALLOW_UNPROTECTED",
+            "money_stolen_minor": stolen_minor,
+            "money_stolen_usd": stolen_minor / 100.0,
+            "reasons": ["[WARDEN OFF] Naive agent trusted prompt without validation"],
+            "detailed_reasons": [],
+            "safe_rendered_text": safe_message,
+            "bouncer_defense": "BREACH (WARDEN OFF)",
+        }
 
     decision = state.gateway.process_payment(
         request=payment_req,

@@ -150,10 +150,10 @@ Evaluated against 9 distinct attack categories (5 variants each) plus 100 legiti
 
 | Role | Models Configured | Purpose |
 | :--- | :--- | :--- |
-| **Buyer Agent** | OpenAI `gpt-4o`, Anthropic `claude-3-5-sonnet` | Negotiates errand purchases under Intent constraints. |
+| **Buyer Agent** | OpenAI `gpt-4o-mini` (default), `gpt-4o` | Negotiates errand purchases under Intent constraints. |
 | **Seller Agent** | OpenAI `gpt-4o-mini`, Gemini `gemini-1.5-pro` | Provides merchant catalog offerings and pricing. |
 | **Attacker Agent** | Custom adversarial prompt corpora | Executes prompt injections, homoglyph attacks, and BEC swaps. |
-| **Verifier Agent** | Anthropic `claude-3-5-sonnet` | Independent Second Opinion auditor; strictly can only escalate. |
+| **Verifier Agent** | OpenAI `gpt-4o-mini` | Independent Second Opinion auditor; strictly can only escalate. |
 
 ---
 

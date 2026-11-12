@@ -145,7 +145,7 @@
     "seed": 42,
     "models_tested": [
       "OpenAI gpt-4o",
-      "Anthropic claude-3-5-sonnet",
+      "OpenAI gpt-4o-mini",
       "Google gemini-1.5-pro"
     ],
     "total_attack_variants": 45,

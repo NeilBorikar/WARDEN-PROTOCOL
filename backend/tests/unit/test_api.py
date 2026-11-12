@@ -22,7 +22,8 @@ def clean_state() -> None:
 
 @pytest.fixture
 def client() -> TestClient:
-    return TestClient(app)
+    with TestClient(app) as c:
+        yield c
 
 
 def test_health_endpoint(client: TestClient) -> None:
